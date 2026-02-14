@@ -1,0 +1,131 @@
+<div class="mobile-layout">
+    <!-- 顶部导航栏 -->
+    <header class="navbar">
+        <button (click)="toggleDrawer()" class="btn btn-ghost btn-square">
+            <lucide-icon [img]="icons.Menu" class="w-5 h-5"></lucide-icon>
+        </button>
+        <div class="flex-1 flex items-center gap-2 ml-2">
+            <img src="favicon.ico" alt="Logo" class="w-5 h-5" />
+            <span class="font-bold">AutoMangBoSow</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm">
+            <span class="flex items-center gap-1">
+                <lucide-icon [img]="icons.Wifi" class="w-4 h-4 text-success"></lucide-icon>
+                <span class="text-success">{{ activeCount() }}</span>
+            </span>
+            <span class="flex items-center gap-1">
+                <lucide-icon [img]="icons.MessageSquare" class="w-4 h-4 text-info"></lucide-icon>
+                <span class="text-info">{{ messageCount() }}</span>
+            </span>
+        </div>
+    </header>
+
+    <!-- 侧边抽屉 -->
+    <div class="drawer-overlay" [class.open]="drawerOpen()" (click)="closeDrawer()"></div>
+    <aside class="drawer" [class.open]="drawerOpen()">
+        <div class="drawer-header">
+            <img src="favicon.ico" alt="Logo" class="w-6 h-6" />
+            <span class="text-xl font-bold">AutoMangBoSow</span>
+            <button (click)="closeDrawer()" class="btn btn-ghost btn-sm btn-square ml-auto">
+                <lucide-icon [img]="icons.X" class="w-5 h-5"></lucide-icon>
+            </button>
+        </div>
+
+        <ul class="menu flex-1">
+            <!-- System - Dashboard -->
+            <li>
+                <a routerLink="/dashboard" routerLinkActive="active text-primary bg-primary/10" class="menu-item"
+                    (click)="setView('dashboard')">
+                    <lucide-icon [img]="icons.LayoutDashboard" class="w-5 h-5"></lucide-icon>
+                    <span>仪表盘</span>
+                </a>
+            </li>
+
+            <li class="menu-divider"></li>
+
+            <!-- Goofish -->
+            <li>
+                <a routerLink="/accounts" routerLinkActive="active text-primary bg-primary/10" class="menu-item"
+                    (click)="setView('accounts')">
+                    <lucide-icon [img]="icons.Users" class="w-5 h-5"></lucide-icon>
+                    <span>账号管理</span>
+                </a>
+            </li>
+            <li>
+                <a routerLink="/goods" routerLinkActive="active text-primary bg-primary/10" class="menu-item"
+                    (click)="setView('goods')">
+                    <lucide-icon [img]="icons.Package" class="w-5 h-5"></lucide-icon>
+                    <span>商品管理</span>
+                </a>
+            </li>
+            <li>
+                <a routerLink="/orders" routerLinkActive="active text-primary bg-primary/10" class="menu-item"
+                    (click)="setView('orders')">
+                    <lucide-icon [img]="icons.ShoppingCart" class="w-5 h-5"></lucide-icon>
+                    <span>订单管理</span>
+                </a>
+            </li>
+            <li>
+                <a routerLink="/conversations" routerLinkActive="active text-primary bg-primary/10" class="menu-item"
+                    (click)="setView('conversations')">
+                    <lucide-icon [img]="icons.MessageCircle" class="w-5 h-5"></lucide-icon>
+                    <span>对话消息</span>
+                </a>
+            </li>
+
+            <li class="menu-divider"></li>
+
+            <!-- Bot -->
+            <li>
+                <a routerLink="/autosell" routerLinkActive="active text-primary bg-primary/10" class="menu-item"
+                    (click)="setView('autosell')">
+                    <lucide-icon [img]="icons.Upload" class="w-5 h-5"></lucide-icon>
+                    <span>自动发货</span>
+                </a>
+            </li>
+            <li>
+                <a routerLink="/workflow" routerLinkActive="active text-primary bg-primary/10" class="menu-item"
+                    (click)="setView('workflow')">
+                    <lucide-icon [img]="icons.GitBranch" class="w-5 h-5"></lucide-icon>
+                    <span>发货流程</span>
+                </a>
+            </li>
+            <li>
+                <a routerLink="/autoreply" routerLinkActive="active text-primary bg-primary/10" class="menu-item"
+                    (click)="setView('autoreply')">
+                    <lucide-icon [img]="icons.Bot" class="w-5 h-5"></lucide-icon>
+                    <span>自动回复</span>
+                </a>
+            </li>
+
+            <li class="menu-divider"></li>
+
+            <!-- System -->
+            <li>
+                <a routerLink="/logs" routerLinkActive="active text-primary bg-primary/10" class="menu-item"
+                    (click)="setView('logs')">
+                    <lucide-icon [img]="icons.FileText" class="w-5 h-5"></lucide-icon>
+                    <span>系统日志</span>
+                </a>
+            </li>
+            <li>
+                <a routerLink="/setting" routerLinkActive="active text-primary bg-primary/10" class="menu-item"
+                    (click)="setView('setting')">
+                    <lucide-icon [img]="icons.Settings" class="w-5 h-5"></lucide-icon>
+                    <span>系统设置</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="drawer-footer">
+            <div class="flex items-center gap-2 text-sm">
+                <lucide-icon [img]="icons.Wifi" class="w-4 h-4 text-success"></lucide-icon>
+                在线: <span class="text-success font-medium">{{ activeCount() }}</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm mt-1">
+                <lucide-icon [img]="icons.MessageSquare" class="w-4 h-4 text-info"></lucide-icon>
+                消息: <span class="text-info font-medium">{{ messageCount() }}</span>
+            </div>
+        </div>
+    </aside>
+</div>

@@ -1,0 +1,558 @@
+<div class="w-full">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">自动发货</h2>
+    </div>
+
+    <!-- 响应式两栏布局 -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <!-- 左侧：添加/编辑表单 -->
+        <div class="xl:col-span-1">
+            <div class="card bg-base-100 shadow">
+                <div class="card-body">
+                    <h3 class="card-title text-lg">{{ editingRule() ? '编辑规则' : '添加规则' }}</h3>
+
+                    <form (ngSubmit)="saveRule()" class="space-y-4">
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">规则名称 <span class="text-error">*</span></span>
+                            </label>
+                            <input type="text" class="input input-bordered input-sm w-full" [ngModel]="formData().name"
+                                (ngModelChange)="updateField('name', $event)" name="name" placeholder="例如：卡密自动发货" />
+                        </div>
+
+                        <!-- 账��筛选 -->
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">筛选账号</span>
+                            </label>
+                            <div class="dropdown w-full" [class.dropdown-open]="showAccountDropdown()">
+                                <div tabindex="0" role="button"
+                                    class="select select-bordered select-sm w-full flex items-center"
+                                    (click)="showAccountDropdown.set(!showAccountDropdown())">
+                                    {{ getAccountLabel(formData().accountId) }}
+                                </div>
+                                <ul tabindex="0" style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-50 w-full p-2 shadow-lg max-h-60 overflow-y-auto">
+                                    <li><a (click)="selectAccount(null)" [class.active]="!formData().accountId">全部账号</a></li>
+                                    @for (account of accounts(); track account.id) {
+                                    <li><a (click)="selectAccount(account.id)" [class.active]="formData().accountId === account.id">{{ account.nickname || account.id }}</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 商品选择 -->
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">选择商品 <span class="text-error">*</span></span>
+                            </label>
+                            @if (selectedGoods(); as goods) {
+                            <div class="flex items-center gap-2 p-2 bg-base-200 rounded-lg">
+                                <img [src]="goods.picUrl" class="w-10 h-10 rounded object-cover" />
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm font-medium truncate">{{ goods.title }}</div>
+                                    <div class="text-xs text-base-content/50">¥{{ goods.price }}</div>
+                                </div>
+                                <button type="button" class="btn btn-ghost btn-xs btn-square"
+                                    (click)="clearGoodsSelection()">
+                                    <lucide-angular [img]="icons.X" class="w-4 h-4" />
+                                </button>
+                            </div>
+                            } @else {
+                            <div class="relative">
+                                <input type="text" class="input input-bordered input-sm w-full"
+                                    [ngModel]="goodsSearch()" (ngModelChange)="goodsSearch.set($event)"
+                                    (focus)="onGoodsSearchFocus()" (blur)="onGoodsSearchBlur()" name="goodsSearch"
+                                    placeholder="搜索商品名称或ID..." />
+                                @if (loadingGoods()) {
+                                <span
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 loading loading-spinner loading-xs"></span>
+                                }
+                                @if (showGoodsDropdown() && filteredGoods().length > 0) {
+                                <div
+                                    class="absolute z-50 w-full mt-1 bg-base-100 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                    @for (goods of filteredGoods(); track goods.id) {
+                                    <div class="flex items-center gap-2 p-2 hover:bg-base-200 cursor-pointer"
+                                        (mousedown)="selectGoods(goods)">
+                                        <img [src]="goods.picUrl" class="w-8 h-8 rounded object-cover" />
+                                        <div class="flex-1 min-w-0">
+                                            <div class="text-sm truncate">{{ goods.title }}</div>
+                                            <div class="text-xs text-base-content/50">
+                                                ¥{{ goods.price }}
+                                                @if (goods.accountNickname) {
+                                                · {{ goods.accountNickname }}
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    }
+                                </div>
+                                }
+                                @if (showGoodsDropdown() && filteredGoods().length === 0 && goodsSearch()) {
+                                <div
+                                    class="absolute z-50 w-full mt-1 bg-base-100 rounded-lg shadow-lg p-4 text-center text-base-content/50 text-sm">
+                                    未找到匹配的商品
+                                </div>
+                                }
+                            </div>
+                            }
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">发货类型</span>
+                            </label>
+                            <div class="dropdown w-full" [class.dropdown-open]="showDeliveryTypeDropdown()">
+                                <div tabindex="0" role="button"
+                                    class="select select-bordered select-sm w-full flex items-center"
+                                    (click)="showDeliveryTypeDropdown.set(!showDeliveryTypeDropdown())">
+                                    {{ getDeliveryTypeLabel(formData().deliveryType) }}
+                                </div>
+                                <ul tabindex="0" class="dropdown-content menu rounded-box z-50 w-full p-2 shadow-lg"
+                                    style="background-color: #FFFCF9; border: 1px solid #E8E0D8;">
+                                    @for (type of deliveryTypes; track type.value) {
+                                    <li><a (click)="selectDeliveryType(type.value)" [class.active]="formData().deliveryType === type.value">{{ type.label }}</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">触发时机</span>
+                            </label>
+                            <div class="dropdown w-full" [class.dropdown-open]="showTriggerDropdown()">
+                                <div tabindex="0" role="button"
+                                    class="select select-bordered select-sm w-full flex items-center"
+                                    (click)="showTriggerDropdown.set(!showTriggerDropdown())">
+                                    {{ getTriggerLabel(formData().triggerOn) }}
+                                </div>
+                                <ul tabindex="0" style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-50 w-full p-2 shadow-lg">
+                                    @for (opt of triggerOptions; track opt.value) {
+                                    <li><a (click)="selectTrigger(opt.value)" [class.active]="formData().triggerOn === opt.value">{{ opt.label }}</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 延迟发货 -->
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">延迟发货</span>
+                            </label>
+                            <div class="join w-full">
+                                <input type="number" class="input input-bordered input-sm join-item flex-1" min="0" max="3600"
+                                    [ngModel]="formData().delaySeconds"
+                                    (ngModelChange)="updateField('delaySeconds', $event)" name="delaySeconds"
+                                    placeholder="0" />
+                                <span class="join-item btn btn-sm no-animation">秒</span>
+                            </div>
+                            <label class="label py-1">
+                                <span class="label-text-alt text-base-content/50">设置后将在触发后等待指定秒数再发货，0 表示立即发货</span>
+                            </label>
+                        </div>
+
+                        <!-- ��货流程选择 -->
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">发货流程</span>
+                                <button type="button" class="btn btn-xs btn-ghost gap-1" (click)="goToWorkflowPage()">
+                                    <lucide-angular [img]="icons.Settings" class="w-3 h-3" />
+                                    管理
+                                </button>
+                            </label>
+                            <div class="dropdown w-full" [class.dropdown-open]="showWorkflowDropdown()">
+                                <div tabindex="0" role="button"
+                                    class="select select-bordered select-sm w-full flex items-center"
+                                    (click)="showWorkflowDropdown.set(!showWorkflowDropdown())">
+                                    {{ getWorkflowName(formData().workflowId) }}
+                                </div>
+                                <ul tabindex="0" style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-50 w-full p-2 shadow-lg max-h-60 overflow-y-auto">
+                                    <li><a (click)="selectWorkflow(null)" [class.active]="!formData().workflowId">默认流程（触发→发货→标记发货）</a></li>
+                                    @for (wf of workflows(); track wf.id) {
+                                    <li><a (click)="selectWorkflow(wf.id)" [class.active]="formData().workflowId === wf.id">{{ wf.name }}</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 固定文本配置 -->
+                        @if (formData().deliveryType === 'fixed') {
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">发货内容 <span class="text-error">*</span></span>
+                            </label>
+                            <textarea class="textarea textarea-bordered textarea-sm w-full" rows="4"
+                                [ngModel]="formData().deliveryContent"
+                                (ngModelChange)="updateField('deliveryContent', $event)" name="deliveryContent"
+                                placeholder="输入要发送给买家的内容，如卡密、链接等"></textarea>
+                        </div>
+                        }
+
+                        <!-- 库存配置 -->
+                        @if (formData().deliveryType === 'stock') {
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">库存内容（每行一条）</span>
+                                <span class="label-text-alt">
+                                    <label class="btn btn-xs btn-ghost gap-1 cursor-pointer">
+                                        <lucide-angular [img]="icons.Upload" class="w-3 h-3" />
+                                        导入文件
+                                        <input type="file" class="hidden" accept=".txt,.csv"
+                                            (change)="onStockFileSelect($event)" />
+                                    </label>
+                                </span>
+                            </label>
+                            <textarea class="textarea textarea-bordered textarea-sm w-full font-mono" rows="6"
+                                [ngModel]="stockContent()" (ngModelChange)="stockContent.set($event)"
+                                placeholder="卡密1&#10;卡密2&#10;卡密3&#10;..."></textarea>
+                            <label class="label py-1">
+                                <span class="label-text-alt text-base-content/50">
+                                    @if (editingRule()) {
+                                    当前库存: {{ editingRuleStock().available }}/{{ editingRuleStock().total }}，新增内容将追加到现有库存
+                                    } @else {
+                                    支持 txt/csv 文件导入，每行一条
+                                    }
+                                </span>
+                                @if (stockContent()) {
+                                <span class="label-text-alt text-info">待添加: {{ stockContentCount() }} 条</span>
+                                }
+                            </label>
+                        </div>
+                        }
+
+                        <!-- API 配置 -->
+                        @if (formData().deliveryType === 'api') {
+                        <div class="space-y-3 p-3 bg-base-200 rounded-lg">
+                            <div class="text-sm font-medium">API 配置</div>
+                            <div class="form-control">
+                                <label class="label py-1">
+                                    <span class="label-text">API 地址 <span class="text-error">*</span></span>
+                                </label>
+                                <input type="text" class="input input-bordered input-sm w-full"
+                                    [ngModel]="formData().apiUrl" (ngModelChange)="updateField('apiUrl', $event)"
+                                    name="apiUrl" placeholder="https://api.example.com/get-code" />
+                            </div>
+                            <div class="form-control">
+                                <label class="label py-1">
+                                    <span class="label-text">请求方法</span>
+                                </label>
+                                <div class="dropdown w-full" [class.dropdown-open]="showApiMethodDropdown()">
+                                    <div tabindex="0" role="button"
+                                        class="select select-bordered select-sm w-full flex items-center"
+                                        (click)="showApiMethodDropdown.set(!showApiMethodDropdown())">
+                                        {{ formData().apiMethod }}
+                                    </div>
+                                    <ul tabindex="0" style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-50 w-full p-2 shadow-lg">
+                                        <li><a (click)="selectApiMethod('GET')" [class.active]="formData().apiMethod === 'GET'">GET</a></li>
+                                        <li><a (click)="selectApiMethod('POST')" [class.active]="formData().apiMethod === 'POST'">POST</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="form-control">
+                                <label class="label py-1">
+                                    <span class="label-text">请求头（JSON）</span>
+                                </label>
+                                <div class="h-28 rounded-lg overflow-hidden">
+                                    <app-code-editor [value]="formData().apiHeaders"
+                                        (valueChange)="updateField('apiHeaders', $event)" language="json" />
+                                </div>
+                            </div>
+                            @if (formData().apiMethod === 'POST') {
+                            <div class="form-control">
+                                <label class="label py-1">
+                                    <span class="label-text">请求体（JSON）</span>
+                                </label>
+                                <div class="h-28 rounded-lg overflow-hidden">
+                                    <app-code-editor [value]="formData().apiBody"
+                                        (valueChange)="updateField('apiBody', $event)" language="json" />
+                                </div>
+                                <label class="label py-1">
+                                    <span class="label-text-alt text-base-content/50">
+                                        变量: {{ '{' }}{{ '{' }}orderId{{ '}' }}{{ '}' }}, {{ '{' }}{{ '{' }}accountId{{
+                                        '}' }}{{ '}' }}, {{ '{' }}{{ '{' }}itemId{{ '}' }}{{ '}' }}, {{ '{' }}{{ '{' }}buyerUserId{{ '}' }}{{ '}' }}
+                                    </span>
+                                </label>
+                            </div>
+                            }
+                            <div class="form-control">
+                                <label class="label py-1">
+                                    <span class="label-text">响应模板 <span class="text-error">*</span></span>
+                                </label>
+                                <textarea class="textarea textarea-bordered textarea-sm w-full font-mono" rows="6"
+                                    [ngModel]="formData().apiResponseTemplate"
+                                    (ngModelChange)="updateField('apiResponseTemplate', $event)"
+                                    name="apiResponseTemplate"
+                                    placeholder="API密钥：'{{ '{' }}{{ '{' }}data.key{{ '}' }}{{ '}' }}'&#10;URL地址：https://example.com&#10;账号：'{{ '{' }}{{ '{' }}data.login_id{{ '}' }}{{ '}' }}'"></textarea>
+                                <label class="label py-1">
+                                    <span class="label-text-alt text-base-content/50">
+                                        使用 {{ '{' }}{{ '{' }}data.字段名{{ '}' }}{{ '}' }} 提取API响应中的值
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        }
+
+                        <div class="form-control">
+                            <label class="label cursor-pointer justify-start gap-2 py-1">
+                                <input type="checkbox" class="checkbox checkbox-sm checkbox-primary"
+                                    [ngModel]="formData().enabled" (ngModelChange)="updateField('enabled', $event)"
+                                    name="enabled" />
+                                <span class="label-text">启用此规则</span>
+                            </label>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button type="submit" [disabled]="saving()" class="btn btn-primary btn-sm flex-1 gap-1">
+                                @if (saving()) {
+                                <span class="loading loading-spinner loading-xs"></span>
+                                } @else {
+                                <lucide-angular [img]="editingRule() ? icons.Save : icons.Plus" class="w-4 h-4" />
+                                }
+                                {{ editingRule() ? '保存' : '添加' }}
+                            </button>
+                            @if (editingRule()) {
+                            <button type="button" (click)="cancelEdit()" class="btn btn-ghost btn-sm">取消</button>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 帮助卡片 -->
+            <div class="card bg-base-100 shadow mt-4">
+                <div class="card-body py-4">
+                    <div class="flex items-center gap-2">
+                        <lucide-angular [img]="icons.HelpCircle" class="w-4 h-4 text-base-content/50" />
+                        <span class="text-sm font-medium">发货类型说明</span>
+                    </div>
+                    <ul class="text-xs text-base-content/60 space-y-1 mt-2">
+                        <li><span class="font-medium">固定文本：</span>直接发送预设内容（卡密、链接等）</li>
+                        <li><span class="font-medium text-secondary">库存发货：</span>从库存列表中取货，一次性消耗</li>
+                        <li><span class="font-medium text-accent">API取货：</span>通过外部API获取发货内容</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：规则列表 -->
+        <div class="xl:col-span-2">
+            <div class="card bg-base-100 shadow">
+                <div class="card-body p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-medium">发货规则</h3>
+                        <button class="btn btn-sm btn-ghost" (click)="loadRules()" [disabled]="loading()">
+                            <lucide-angular [img]="icons.RefreshCw" class="w-4 h-4" [class.animate-spin]="loading()" />
+                        </button>
+                    </div>
+
+                    @if (loading()) {
+                    <div class="flex justify-center py-12">
+                        <span class="loading loading-spinner loading-lg text-primary"></span>
+                    </div>
+                    } @else if (rules().length === 0) {
+                    <div class="text-center py-12 text-base-content/50">
+                        <lucide-angular [img]="icons.Package" class="w-12 h-12 mx-auto mb-2 opacity-30" />
+                        <p>暂无发货规则</p>
+                        <p class="text-sm mt-1">在左侧添加第一条规则</p>
+                    </div>
+                    } @else {
+                    <!-- 桌面端表格 -->
+                    <div class="overflow-x-auto hidden lg:block">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>状态</th>
+                                    <th>名称</th>
+                                    <th>商品</th>
+                                    <th>类型</th>
+                                    <th>库存</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (rule of rules(); track rule.id) {
+                                <tr class="hover">
+                                    <td>
+                                        <input type="checkbox" class="toggle toggle-sm toggle-success"
+                                            [checked]="rule.enabled" (change)="toggleRule(rule)" />
+                                    </td>
+                                    <td class="font-medium">{{ rule.name }}</td>
+                                    <td class="max-w-40">
+                                        <span class="text-sm truncate block" [title]="getGoodsTitle(rule.itemId || '')">
+                                            {{ getGoodsTitle(rule.itemId || '') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm"
+                                            [class.badge-primary]="rule.deliveryType === 'fixed'"
+                                            [class.badge-secondary]="rule.deliveryType === 'stock'"
+                                            [class.badge-accent]="rule.deliveryType === 'api'">
+                                            {{ getDeliveryTypeLabel(rule.deliveryType) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (rule.deliveryType === 'stock') {
+                                        <span class="text-sm font-mono">
+                                            {{ (rule.stockCount || 0) - (rule.usedCount || 0) }}/{{ rule.stockCount || 0
+                                            }}
+                                        </span>
+                                        } @else {
+                                        <span class="text-base-content/30">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="flex gap-1">
+                                            <button class="btn btn-ghost btn-xs btn-square" (click)="onEdit(rule)"
+                                                title="编辑">
+                                                <lucide-angular [img]="icons.Pencil" class="w-3.5 h-3.5" />
+                                            </button>
+                                            @if (rule.deliveryType === 'stock') {
+                                            <button class="btn btn-ghost btn-xs btn-square"
+                                                (click)="openStockModal(rule.id)" title="管理库存">
+                                                <lucide-angular [img]="icons.Package" class="w-3.5 h-3.5" />
+                                            </button>
+                                            }
+                                            <button class="btn btn-error btn-xs btn-square" (click)="deleteRule(rule)"
+                                                title="删除">
+                                                <lucide-angular [img]="icons.Trash2" class="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 移动端卡片 -->
+                    <div class="lg:hidden space-y-3">
+                        @for (rule of rules(); track rule.id) {
+                        <div class="card card-bordered">
+                            <div class="card-body p-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" class="toggle toggle-sm toggle-success"
+                                            [checked]="rule.enabled" (change)="toggleRule(rule)" />
+                                        <span class="font-medium">{{ rule.name }}</span>
+                                    </div>
+                                    <span class="badge badge-sm" [class.badge-primary]="rule.deliveryType === 'fixed'"
+                                        [class.badge-secondary]="rule.deliveryType === 'stock'"
+                                        [class.badge-accent]="rule.deliveryType === 'api'">
+                                        {{ getDeliveryTypeLabel(rule.deliveryType) }}
+                                    </span>
+                                </div>
+                                <div class="text-sm mt-2 space-y-1">
+                                    <div class="flex gap-2">
+                                        <span class="text-base-content/50 shrink-0">商品:</span>
+                                        <span class="truncate">{{ getGoodsTitle(rule.itemId || '') }}</span>
+                                    </div>
+                                    @if (rule.deliveryType === 'stock') {
+                                    <div class="flex gap-2">
+                                        <span class="text-base-content/50 shrink-0">库存:</span>
+                                        <span class="font-mono">{{ (rule.stockCount || 0) - (rule.usedCount || 0) }}/{{
+                                            rule.stockCount || 0 }}</span>
+                                    </div>
+                                    }
+                                </div>
+                                <div class="card-actions justify-end items-center mt-2">
+                                    <button class="btn btn-ghost btn-xs" (click)="onEdit(rule)">编辑</button>
+                                    @if (rule.deliveryType === 'stock') {
+                                    <button class="btn btn-ghost btn-xs" (click)="openStockModal(rule.id)">库存</button>
+                                    }
+                                    <button class="btn btn-error btn-xs" (click)="deleteRule(rule)">删除</button>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 库存管理弹窗 -->
+    @if (showStockModal()) {
+    <div class="modal modal-open">
+        <div class="modal-box w-11/12 max-w-2xl max-h-[85vh] flex flex-col">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" (click)="closeStockModal()">
+                <lucide-angular [img]="icons.X" class="w-4 h-4" />
+            </button>
+            <h3 class="font-bold text-lg pr-8">库存列表</h3>
+
+            <!-- 统计信息 -->
+            @if (stockStats(); as stats) {
+            <div class="flex flex-wrap gap-4 mt-3 text-sm">
+                <div class="flex items-center gap-1">
+                    <span class="text-base-content/50">总计:</span>
+                    <span class="font-mono">{{ stats.total }}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <span class="text-success">可用:</span>
+                    <span class="font-mono text-success">{{ stats.available }}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <span class="text-base-content/50">已用:</span>
+                    <span class="font-mono">{{ stats.used }}</span>
+                </div>
+            </div>
+            }
+
+            <!-- 筛选和操作 -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mt-3">
+                <label class="label cursor-pointer gap-2 p-0">
+                    <input type="checkbox" class="checkbox checkbox-xs" [checked]="showUsedStock()"
+                        (change)="toggleShowUsed()" />
+                    <span class="label-text text-sm">显示已使用</span>
+                </label>
+                <div class="flex gap-2">
+                    <button class="btn btn-ghost btn-xs" (click)="clearStock(stockRuleId()!, true)"
+                        [disabled]="!stockStats()?.used">
+                        清空已用
+                    </button>
+                    <button class="btn btn-error btn-xs" (click)="clearStock(stockRuleId()!, false)"
+                        [disabled]="!stockStats()?.total">
+                        清空全部
+                    </button>
+                </div>
+            </div>
+
+            <!-- 库存列表 -->
+            <div class="flex-1 overflow-y-auto mt-3 min-h-0">
+                @if (loadingStock()) {
+                <div class="flex justify-center py-8">
+                    <span class="loading loading-spinner loading-md"></span>
+                </div>
+                } @else if (stockItems().length === 0) {
+                <div class="text-center py-8 text-base-content/50">
+                    <lucide-angular [img]="icons.Package" class="w-10 h-10 mx-auto mb-2 opacity-30" />
+                    <p>暂无库存</p>
+                    <p class="text-xs mt-1">在编辑规则时添加库存</p>
+                </div>
+                } @else {
+                <div class="space-y-1">
+                    @for (item of stockItems(); track item.id) {
+                    <div class="flex items-center gap-2 p-2 rounded-lg text-sm" [class.bg-base-200]="!item.used"
+                        [class.bg-base-300/50]="item.used" [class.opacity-60]="item.used">
+                        <span class="w-2 h-2 rounded-full shrink-0" [class.bg-success]="!item.used"
+                            [class.bg-error]="item.used"></span>
+                        <div class="flex-1 font-mono truncate" [title]="item.content">
+                            {{ item.content }}
+                        </div>
+                        @if (item.used) {
+                        <span class="badge badge-sm badge-ghost shrink-0">已用</span>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="modal-action mt-3">
+                <button class="btn btn-ghost btn-sm" (click)="closeStockModal()">关闭</button>
+            </div>
+        </div>
+        <div class="modal-backdrop" (click)="closeStockModal()"></div>
+    </div>
+    }
+</div>

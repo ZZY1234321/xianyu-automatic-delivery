@@ -1,0 +1,586 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* ========================================
+   字体配置
+   ======================================== */
+
+@font-face {
+    font-family: 'Plus Jakarta Sans';
+    font-display: swap;
+    src: local('Plus Jakarta Sans');
+}
+
+:root {
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+/* ========================================
+   DaisyUI 主题定制 - 简约暖色调
+   ======================================== */
+
+[data-theme="light"] {
+    --p: 24 95% 53%;          /* primary: 温暖橙色 #FF6B35 */
+    --pf: 24 95% 45%;         /* primary-focus */
+    --pc: 0 0% 100%;          /* primary-content */
+
+    --s: 210 90% 60%;         /* secondary: 科技蓝 */
+    --sf: 210 90% 50%;
+    --sc: 0 0% 100%;
+
+    --a: 160 60% 45%;         /* accent: 清新绿 */
+    --af: 160 60% 38%;
+    --ac: 0 0% 100%;
+
+    --n: 220 15% 25%;         /* neutral */
+    --nf: 220 15% 20%;
+    --nc: 0 0% 100%;
+
+    --b1: 30 50% 99%;         /* base-100: 温暖白 */
+    --b2: 30 30% 96%;         /* base-200 */
+    --b3: 30 20% 92%;         /* base-300 */
+    --bc: 220 20% 20%;        /* base-content */
+
+    --in: 210 90% 55%;        /* info */
+    --su: 160 60% 45%;        /* success */
+    --wa: 40 95% 55%;         /* warning */
+    --er: 0 75% 55%;          /* error */
+
+    --rounded-box: 1rem;
+    --rounded-btn: 0.5rem;
+    --rounded-badge: 0.375rem;
+    --animation-btn: 0.2s;
+    --animation-input: 0.2s;
+    --btn-focus-scale: 0.98;
+    --border-btn: 1px;
+    --tab-border: 1px;
+    --tab-radius: 0.5rem;
+}
+
+/* ========================================
+   设计令牌 - Design Tokens
+   ======================================== */
+
+:root {
+    /* 圆角 */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.25rem;
+
+    /* 阴影 - 更柔和 */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+
+    /* 品牌色渐变 */
+    --gradient-brand: linear-gradient(135deg, #FF8A4C 0%, #FF6B35 50%, #E85D04 100%);
+    --gradient-brand-soft: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+
+    /* 间距 */
+    --spacing-page: 1.25rem;
+    --spacing-card: 1.25rem;
+    --spacing-section: 1.5rem;
+    --gap-grid: 1rem;
+}
+
+@media (min-width: 640px) {
+    :root {
+        --spacing-page: 1.5rem;
+        --spacing-card: 1.5rem;
+        --gap-grid: 1.25rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    :root {
+        --spacing-page: 2rem;
+        --spacing-card: 1.5rem;
+        --gap-grid: 1.5rem;
+    }
+}
+
+/* ========================================
+   全局基础样式
+   ======================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-sans);
+    background: oklch(var(--b2));
+    color: oklch(var(--bc));
+    line-height: 1.6;
+}
+
+/* ========================================
+   全局组件样式覆盖
+   ======================================== */
+
+/* 统一卡片样式 */
+.card {
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid oklch(var(--b3) / 0.5);
+    background: oklch(var(--b1));
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card-body {
+    padding: var(--spacing-card);
+}
+
+/* 统一按钮样式 */
+.btn {
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: var(--gradient-brand);
+    border: none;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 4px 12px rgb(255 107 53 / 0.3);
+}
+
+.btn-ghost {
+    color: oklch(var(--bc) / 0.7);
+}
+
+.btn-ghost:hover {
+    background: oklch(var(--b2));
+    color: oklch(var(--bc));
+}
+
+.btn-circle {
+    border-radius: 9999px;
+}
+
+/* 统一输入框样式 */
+.input,
+.select,
+.textarea {
+    border-radius: var(--radius-md);
+    border: 1px solid oklch(var(--b3));
+    background: oklch(var(--b1));
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+    border-color: oklch(var(--p));
+    box-shadow: 0 0 0 3px oklch(var(--p) / 0.1);
+    outline: none;
+}
+
+/* 下拉选项样式 - 修复撞色问题 */
+select,
+.select,
+select.select {
+    background-color: #FFFCF9 !important;
+    color: #2D3748 !important;
+}
+
+select option,
+.select option {
+    background-color: #FFFCF9 !important;
+    color: #2D3748 !important;
+    padding: 0.5rem 1rem;
+}
+
+select option:hover,
+select option:focus,
+select option:checked,
+.select option:hover,
+.select option:focus,
+.select option:checked {
+    background-color: #FFE8D6 !important;
+    color: #2D3748 !important;
+}
+
+/* 自定义下拉菜单样式 - 强制不透明背景 */
+.dropdown-content,
+.dropdown-content.menu,
+ul.dropdown-content,
+ul.dropdown-content.menu,
+.dropdown-content.bg-base-100,
+.dropdown-content.menu.bg-base-100,
+ul.dropdown-content.bg-base-100,
+ul.dropdown-content.menu.bg-base-100 {
+    background-color: #FFFCF9 !important;
+    background: #FFFCF9 !important;
+    border: 1px solid #D4C8BE !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
+    opacity: 1 !important;
+    --tw-bg-opacity: 1 !important;
+}
+
+.dropdown-content li,
+.dropdown-content.menu li,
+.dropdown-content.bg-base-100 li {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+.dropdown-content li > a,
+.dropdown-content.menu li > a,
+.dropdown-content.bg-base-100 li > a {
+    background-color: #FFFCF9 !important;
+    background: #FFFCF9 !important;
+    color: #2D3748 !important;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    --tw-bg-opacity: 1 !important;
+}
+
+.dropdown-content li > a:hover,
+.dropdown-content.menu li > a:hover,
+.dropdown-content.bg-base-100 li > a:hover {
+    background-color: #F0E6DD !important;
+    background: #F0E6DD !important;
+    color: #2D3748 !important;
+}
+
+.dropdown-content li > a.active,
+.dropdown-content.menu li > a.active,
+.dropdown-content.bg-base-100 li > a.active {
+    background-color: #FFE8D6 !important;
+    background: #FFE8D6 !important;
+    color: #E85D04 !important;
+    font-weight: 500;
+}
+
+/* 统一徽章样式 */
+.badge {
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+}
+
+/* 统一头像样式 */
+.avatar>div {
+    border-radius: var(--radius-lg);
+}
+
+.avatar .rounded-full {
+    border-radius: 9999px;
+}
+
+/* 统一表格样式 */
+.table {
+    border-radius: var(--radius-lg);
+}
+
+.table th {
+    background: oklch(var(--b2));
+    font-weight: 600;
+    color: oklch(var(--bc) / 0.8);
+    text-transform: none;
+    font-size: 0.8125rem;
+}
+
+.table tr:hover {
+    background: oklch(var(--b2) / 0.5);
+}
+
+/* 统一 alert 样式 */
+.alert {
+    border-radius: var(--radius-md);
+}
+
+/* 统一 toggle 样式 */
+.toggle {
+    border-radius: 9999px;
+}
+
+/* 统一 join 样式 */
+.join .btn:first-child {
+    border-top-left-radius: var(--radius-md);
+    border-bottom-left-radius: var(--radius-md);
+}
+
+.join .btn:last-child {
+    border-top-right-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+}
+
+/* 统一 stat 样式 */
+.stat {
+    border-radius: var(--radius-xl);
+    padding: 1.25rem 1.5rem;
+}
+
+.stat-title {
+    color: oklch(var(--bc) / 0.6);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.stat-figure {
+    color: oklch(var(--p));
+}
+
+/* ========================================
+   页面容器样式
+   ======================================== */
+
+.page-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-grid);
+}
+
+/* ========================================
+   响应式网格系统
+   ======================================== */
+
+.grid-responsive {
+    display: grid;
+    gap: var(--gap-grid);
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .grid-responsive-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-responsive-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-responsive-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ========================================
+   工具类
+   ======================================== */
+
+/* 文本截断 */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 滚动容器 */
+.scroll-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.scroll-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+    background: oklch(var(--bc) / 0.15);
+    border-radius: 3px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+    background: oklch(var(--bc) / 0.25);
+}
+
+/* 卡片悬停效果 */
+.card-hover {
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.card-hover:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+/* 列表项悬停 */
+.list-item-hover {
+    border-radius: var(--radius-md);
+    transition: background-color 0.15s ease;
+}
+
+.list-item-hover:hover {
+    background-color: oklch(var(--b2));
+}
+
+/* ========================================
+   品牌元素
+   ======================================== */
+
+.brand-gradient {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.brand-bg {
+    background: var(--gradient-brand);
+}
+
+.brand-bg-soft {
+    background: var(--gradient-brand-soft);
+}
+
+/* ========================================
+   动画
+   ======================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse-soft {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+.animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* ========================================
+   状态指示器
+   ======================================== */
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    display: inline-block;
+}
+
+.status-dot-online {
+    background: oklch(var(--su));
+    box-shadow: 0 0 0 3px oklch(var(--su) / 0.2);
+}
+
+.status-dot-offline {
+    background: oklch(var(--bc) / 0.3);
+}
+
+.status-dot-error {
+    background: oklch(var(--er));
+    box-shadow: 0 0 0 3px oklch(var(--er) / 0.2);
+}
+
+/* ========================================
+   空状态
+   ======================================== */
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: oklch(var(--bc) / 0.5);
+}
+
+.empty-state-icon {
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+}
+
+.empty-state-text {
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+/* ========================================
+   页面标题
+   ======================================== */
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: oklch(var(--bc));
+    letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+    font-size: 0.875rem;
+    color: oklch(var(--bc) / 0.6);
+    margin-top: 0.25rem;
+}
+
+/* ========================================
+   Section 标题
+   ======================================== */
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: oklch(var(--bc));
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: oklch(var(--p));
+}

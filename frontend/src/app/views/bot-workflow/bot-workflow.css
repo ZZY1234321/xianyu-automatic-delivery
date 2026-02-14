@@ -1,0 +1,95 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+/* 思维导图容器使用绝对定位填充 */
+:host ::ng-deep #mindMapContainer,
+:host ::ng-deep [id^="smm"] {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+:host ::ng-deep svg {
+    display: block;
+}
+
+/* 思维导图节点样式覆盖 */
+:host ::ng-deep .smm-node {
+    cursor: pointer;
+}
+
+:host ::ng-deep .smm-node-text {
+    font-size: 13px;
+}
+
+/* 移动端节点文字更小 */
+@media (max-width: 640px) {
+    :host ::ng-deep .smm-node-text {
+        font-size: 11px;
+    }
+}
+
+/* 下拉菜单样式 */
+.dropdown-content {
+    min-width: 160px;
+}
+
+.dropdown-content li a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* 配置面板滚动 */
+.overflow-y-auto {
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: oklch(var(--bc) / 0.2);
+    border-radius: 2px;
+}
+
+/* 移动端配置面板样式 */
+:host ::ng-deep .mobile-panel .absolute {
+    position: static !important;
+    width: 100% !important;
+    max-height: none !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+:host ::ng-deep .mobile-panel>div>div:first-child {
+    display: none !important;
+}
+
+:host ::ng-deep .mobile-panel>div>div:last-child {
+    padding: 0 !important;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
+/* 移动端触摸优化 */
+@media (max-width: 640px) {
+    .btn-xs {
+        min-height: 2rem;
+        min-width: 2rem;
+    }
+
+    .dropdown-content li a {
+        padding: 0.75rem 1rem;
+    }
+
+    /* 移动端画布容器 */
+    :host ::ng-deep #mindMapContainer {
+        touch-action: pan-x pan-y pinch-zoom;
+    }
+}

@@ -1,0 +1,204 @@
+<div class="h-full flex flex-col">
+    <div class="flex justify-between items-center mb-3 flex-shrink-0">
+        <h2 class="text-xl md:text-2xl font-bold">发货流程</h2>
+        @if (!editingWorkflow()) {
+        <button class="btn btn-primary btn-sm gap-1" (click)="createWorkflow()">
+            <lucide-angular [img]="icons.Plus" class="w-4 h-4" />
+            <span class="hidden sm:inline">新建流程</span>
+            <span class="sm:hidden">新建</span>
+        </button>
+        }
+    </div>
+
+    @if (editingWorkflow()) {
+    <!-- 编辑模式 -->
+    <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <!-- 顶部表单 -->
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3 flex-shrink-0">
+            <div class="flex items-center gap-2">
+                <button class="btn btn-ghost btn-sm gap-1" (click)="cancelEdit()">
+                    <lucide-angular [img]="icons.ArrowLeft" class="w-4 h-4" />
+                    <span class="hidden sm:inline">返回</span>
+                </button>
+                <button class="btn btn-primary btn-sm gap-1 sm:hidden" (click)="saveWorkflow()" [disabled]="saving()">
+                    @if (saving()) {
+                    <span class="loading loading-spinner loading-xs"></span>
+                    } @else {
+                    <lucide-angular [img]="icons.Save" class="w-4 h-4" />
+                    }
+                    保存
+                </button>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 flex-1">
+                <input type="text" class="input input-bordered input-sm w-full sm:w-40" [ngModel]="workflowForm().name"
+                    (ngModelChange)="updateFormField('name', $event)" placeholder="流程名称" />
+                <input type="text"
+                    class="input input-bordered input-sm w-full sm:flex-1 sm:min-w-40 sm:max-w-md hidden sm:block"
+                    [ngModel]="workflowForm().description" (ngModelChange)="updateFormField('description', $event)"
+                    placeholder="描述（可选）" />
+                <label class="label cursor-pointer gap-2 p-0 hidden sm:flex">
+                    <input type="checkbox" class="checkbox checkbox-sm checkbox-primary"
+                        [ngModel]="workflowForm().isDefault" (ngModelChange)="updateFormField('isDefault', $event)" />
+                    <span class="label-text text-sm">默认</span>
+                </label>
+                <button class="btn btn-primary btn-sm gap-1 hidden sm:flex" (click)="saveWorkflow()"
+                    [disabled]="saving()">
+                    @if (saving()) {
+                    <span class="loading loading-spinner loading-xs"></span>
+                    } @else {
+                    <lucide-angular [img]="icons.Save" class="w-4 h-4" />
+                    }
+                    保存
+                </button>
+            </div>
+        </div>
+
+        <!-- 画布区域 -->
+        <div class="flex-1 rounded-lg overflow-hidden relative bg-base-200 min-h-0">
+            <div #mindMapContainer class="absolute inset-0"></div>
+
+            <!-- 悬浮工具栏 -->
+            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-wrap gap-1 sm:gap-2 z-10">
+                <div class="dropdown dropdown-bottom">
+                    <div tabindex="0" role="button"
+                        class="btn btn-xs sm:btn-sm bg-base-100/90 backdrop-blur border-base-300 shadow-sm gap-1">
+                        <lucide-angular [img]="icons.Plus" class="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span class="hidden sm:inline">子节点</span>
+                    </div>
+                    <ul tabindex="0"
+                        style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-20 w-40 sm:w-44 p-2 shadow-lg">
+                        @for (item of [
+                        {type: 'delivery', color: '#f59e0b', label: '发货'},
+                        {type: 'ship', color: '#8b5cf6', label: '标记发货'},
+                        {type: 'delay', color: '#6b7280', label: '延迟'},
+                        {type: 'autoreply', color: '#3b82f6', label: '等待回复'},
+                        {type: 'notify', color: '#06b6d4', label: '通知'},
+                        {type: 'condition', color: '#ec4899', label: '条件判断'}
+                        ]; track item.type) {
+                        <li><a (click)="addNode(item.type)">
+                                <span class="w-3 h-3 rounded-full" [style.background]="item.color"></span>
+                                {{ item.label }}
+                            </a></li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="dropdown dropdown-bottom">
+                    <div tabindex="0" role="button"
+                        class="btn btn-xs sm:btn-sm bg-base-100/90 backdrop-blur border-base-300 shadow-sm gap-1">
+                        <lucide-angular [img]="icons.GitBranch" class="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span class="hidden sm:inline">分支</span>
+                    </div>
+                    <ul tabindex="0"
+                        style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-20 w-40 sm:w-44 p-2 shadow-lg">
+                        @for (item of [
+                        {type: 'delivery', color: '#f59e0b', label: '发货'},
+                        {type: 'ship', color: '#8b5cf6', label: '标记发货'},
+                        {type: 'delay', color: '#6b7280', label: '延迟'},
+                        {type: 'autoreply', color: '#3b82f6', label: '等待回复'},
+                        {type: 'notify', color: '#06b6d4', label: '通知'},
+                        {type: 'condition', color: '#ec4899', label: '条件判断'}
+                        ]; track item.type) {
+                        <li><a (click)="addSiblingNode(item.type)">
+                                <span class="w-3 h-3 rounded-full" [style.background]="item.color"></span>
+                                {{ item.label }}
+                            </a></li>
+                        }
+                    </ul>
+                </div>
+
+                <button
+                    class="btn btn-xs sm:btn-sm bg-base-100/90 backdrop-blur border-base-300 shadow-sm gap-1 hidden sm:flex"
+                    (click)="addConditionBranch()">
+                    <lucide-angular [img]="icons.GitBranch" class="w-4 h-4" />
+                    IF/ELSE
+                </button>
+
+                @if (selectedNode()) {
+                <button class="btn btn-xs sm:btn-sm btn-error shadow-sm gap-1" (click)="deleteSelectedNode()">
+                    <lucide-angular [img]="icons.Trash2" class="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span class="hidden sm:inline">删除</span>
+                </button>
+                }
+            </div>
+
+            <!-- 导入导出工具栏 -->
+            <div class="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-1 z-10">
+                <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button"
+                        class="btn btn-xs sm:btn-sm bg-base-100/90 backdrop-blur border-base-300 shadow-sm gap-1">
+                        <lucide-angular [img]="icons.Download" class="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span class="hidden sm:inline">导出</span>
+                    </div>
+                    <ul tabindex="0" style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-20 w-36 p-2 shadow-lg">
+                        <li><a (click)="exportWorkflow()">
+                                <lucide-angular [img]="icons.FileJson" class="w-4 h-4" />
+                                导出 JSON
+                            </a></li>
+                        <li><a (click)="exportAsPng()">
+                                <lucide-angular [img]="icons.Image" class="w-4 h-4" />
+                                导出 PNG
+                            </a></li>
+                    </ul>
+                </div>
+                <label
+                    class="btn btn-xs sm:btn-sm bg-base-100/90 backdrop-blur border-base-300 shadow-sm gap-1 cursor-pointer">
+                    <lucide-angular [img]="icons.Upload" class="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span class="hidden sm:inline">导入</span>
+                    <input type="file" accept=".json" class="hidden" (change)="importWorkflow($event)" />
+                </label>
+            </div>
+
+            <!-- 缩放控制 -->
+            <div class="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 flex gap-1 z-10">
+                <button class="btn btn-xs sm:btn-sm btn-square bg-base-100/90 backdrop-blur border-base-300 shadow-sm"
+                    (click)="zoomOut()" title="缩小">
+                    <lucide-angular [img]="icons.Minus" class="w-3 h-3 sm:w-4 sm:h-4" />
+                </button>
+                <button class="btn btn-xs sm:btn-sm btn-square bg-base-100/90 backdrop-blur border-base-300 shadow-sm"
+                    (click)="zoomIn()" title="放大">
+                    <lucide-angular [img]="icons.Plus" class="w-3 h-3 sm:w-4 sm:h-4" />
+                </button>
+                <button class="btn btn-xs sm:btn-sm btn-square bg-base-100/90 backdrop-blur border-base-300 shadow-sm"
+                    (click)="resetView()" title="重置视图">
+                    <lucide-angular [img]="icons.RotateCcw" class="w-3 h-3 sm:w-4 sm:h-4" />
+                </button>
+            </div>
+
+            <!-- 节点配置面板 -->
+            @if (selectedNode()) {
+            <!-- 桌面端：右侧悬浮 -->
+            <div class="hidden sm:block">
+                <app-node-config-panel [config]="nodeConfig()"
+                    (fieldChange)="updateConfigField($event.field, $event.value)"
+                    (nodeTypeChange)="onNodeTypeChange($event)" (configChange)="updateNodeConfig()" />
+            </div>
+            <!-- 移动端：底部抽屉 -->
+            <div class="sm:hidden absolute bottom-0 left-0 right-0 bg-base-100 border-t border-base-300 
+                rounded-t-xl shadow-lg z-20 max-h-[60vh] overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between p-3 border-b border-base-300">
+                    <span class="font-medium text-sm flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full"
+                            [style.backgroundColor]="getNodeTypeColor(nodeConfig().nodeType)"></span>
+                        节点配置
+                    </span>
+                    <button class="btn btn-ghost btn-xs btn-circle" (click)="selectedNode.set(null)">✕</button>
+                </div>
+                <div class="p-3 overflow-y-auto flex-1" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                    <app-node-config-panel [config]="nodeConfig()"
+                        (fieldChange)="updateConfigField($event.field, $event.value)"
+                        (nodeTypeChange)="onNodeTypeChange($event)" (configChange)="updateNodeConfig()"
+                        class="mobile-panel" />
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    } @else {
+    <!-- 列表模式 -->
+    <div class="flex-1 overflow-y-auto min-h-0">
+        <app-workflow-list [workflows]="workflows()" [loading]="loading()" (edit)="editWorkflow($event)"
+            (delete)="deleteWorkflow($event)" />
+    </div>
+    }
+</div>

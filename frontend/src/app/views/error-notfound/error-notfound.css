@@ -1,0 +1,35 @@
+.error-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--fallback-b2, oklch(var(--b2)));
+}
+
+.error-content {
+    text-align: center;
+    padding: 2rem;
+}
+
+.error-icon {
+    width: 6rem;
+    height: 6rem;
+    margin: 0 auto 1.5rem;
+}
+
+.error-code {
+    font-size: 6rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    line-height: 1;
+}
+
+.error-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.error-message {
+    opacity: 0.6;
+    margin-bottom: 2rem;
+}

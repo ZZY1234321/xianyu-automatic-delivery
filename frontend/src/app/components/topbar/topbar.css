@@ -1,0 +1,58 @@
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 15rem;
+    right: 0;
+    height: 4.5rem;
+    display: flex;
+    align-items: center;
+    background: oklch(var(--b1));
+    border-bottom: 1px solid oklch(var(--b3) / 0.5);
+    z-index: 25;
+    transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.topbar.sidebar-collapsed {
+    left: 4.5rem;
+}
+
+.topbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 2rem;
+}
+
+.topbar-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    color: oklch(var(--bc));
+    letter-spacing: -0.02em;
+}
+
+.topbar-status {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    line-height: 1;
+    color: oklch(var(--bc) / 0.7);
+    padding: 0.5rem 0.75rem;
+    background: oklch(var(--b2) / 0.5);
+    border-radius: 0.5rem;
+}
+
+.status-icon {
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    align-items: center;
+}

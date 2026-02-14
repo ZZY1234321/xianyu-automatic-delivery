@@ -1,0 +1,54 @@
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h1 class="login-title">AutoMangBoSow</h1>
+            <p class="login-subtitle">闲鱼智能助手</p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" class="login-form">
+            @if (error()) {
+            <div class="alert alert-error text-sm">
+                <lucide-icon [img]="icons.AlertCircle" class="w-4 h-4"></lucide-icon>
+                <span>{{ error() }}</span>
+            </div>
+            }
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">账号</span>
+                </label>
+                <div class="input-group">
+                    <span class="input-icon">
+                        <lucide-icon [img]="icons.User" class="w-4 h-4"></lucide-icon>
+                    </span>
+                    <input type="text" class="input input-bordered w-full pl-10"
+                        [ngModel]="username()" (ngModelChange)="username.set($event)"
+                        name="username" placeholder="请输入账号" autocomplete="username" />
+                </div>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">密码</span>
+                </label>
+                <div class="input-group">
+                    <span class="input-icon">
+                        <lucide-icon [img]="icons.Lock" class="w-4 h-4"></lucide-icon>
+                    </span>
+                    <input type="password" class="input input-bordered w-full pl-10"
+                        [ngModel]="password()" (ngModelChange)="password.set($event)"
+                        name="password" placeholder="请输入密码" autocomplete="current-password" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full mt-6" [disabled]="loading()">
+                @if (loading()) {
+                <span class="loading loading-spinner loading-sm"></span>
+                } @else {
+                <lucide-icon [img]="icons.LogIn" class="w-4 h-4"></lucide-icon>
+                }
+                登录
+            </button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,45 @@
+{
+  "name": "goofishcbot",
+  "version": "1.0.0",
+  "description": "Goofish Credentials Bot",
+  "type": "module",
+  "scripts": {
+    "clean": "node -e \"const fs=require('fs');['dist','public','frontend/dist'].forEach(d=>{if(fs.existsSync(d))fs.rmSync(d,{recursive:true,force:true})});console.log('Cleaned: dist, public, frontend/dist')\"",
+    "build": "tsc",
+    "build:frontend": "cd frontend && npm install && npm run build && cd .. && npm run copy:frontend",
+    "copy:frontend": "node -e \"const fs=require('fs');const path=require('path');function copyDir(s,d){fs.mkdirSync(d,{recursive:true});fs.readdirSync(s).forEach(f=>{const sp=path.join(s,f),dp=path.join(d,f);fs.statSync(sp).isDirectory()?copyDir(sp,dp):fs.copyFileSync(sp,dp)});} copyDir('frontend/dist/frontend/browser','public');\"",
+    "dev": "npm run clean && npm run build:frontend && tsx watch src/index.ts",
+    "server": "npm run clean && npm run build:frontend && npm run build && node dist/index.js",
+    "pm2:start": "npm run clean && npm run build:frontend && npm run build && pm2 start ecosystem.config.cjs",
+    "pm2:stop": "pm2 stop ecosystem.config.cjs",
+    "pm2:restart": "pm2 restart ecosystem.config.cjs",
+    "pm2:reload": "pm2 reload ecosystem.config.cjs",
+    "pm2:delete": "pm2 delete ecosystem.config.cjs",
+    "pm2:logs": "pm2 logs ecosystem.config.cjs",
+    "pm2:status": "pm2 status",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hono/node-server": "^1.19.7",
+    "@hono/node-ws": "^1.2.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.5.0",
+    "hono": "^4.11.1",
+    "openai": "^6.15.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@angular/cli": "^21.0.4",
+    "@types/node": "^22.10.2",
+    "@types/ws": "^8.5.13",
+    "pm2": "^6.0.14",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitepress": "^1.6.4"
+  }
+}

@@ -1,0 +1,115 @@
+<div class="page-container">
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title">系统设置</h2>
+
+            <!-- 主题设置 -->
+            <div class="form-control mt-4">
+                <label class="label">
+                    <span class="label-text font-medium">主题模式</span>
+                </label>
+                <div class="flex gap-2">
+                    <button class="btn btn-sm" [class.btn-primary]="themeService.themeMode() === 'light'"
+                        [class.btn-ghost]="themeService.themeMode() !== 'light'" (click)="setTheme('light')">
+                        <lucide-icon [img]="icons.Sun" class="w-4 h-4"></lucide-icon>
+                        浅色
+                    </button>
+                    <button class="btn btn-sm" [class.btn-primary]="themeService.themeMode() === 'dark'"
+                        [class.btn-ghost]="themeService.themeMode() !== 'dark'" (click)="setTheme('dark')">
+                        <lucide-icon [img]="icons.Moon" class="w-4 h-4"></lucide-icon>
+                        深色
+                    </button>
+                    <button class="btn btn-sm" [class.btn-primary]="themeService.themeMode() === 'system'"
+                        [class.btn-ghost]="themeService.themeMode() !== 'system'" (click)="setTheme('system')">
+                        <lucide-icon [img]="icons.Monitor" class="w-4 h-4"></lucide-icon>
+                        跟随系统
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI 设置 -->
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body">
+            <div class="flex items-center gap-2">
+                <lucide-icon [img]="icons.Bot" class="w-5 h-5 text-primary"></lucide-icon>
+                <h3 class="card-title text-lg">AI 服务配置</h3>
+            </div>
+            <p class="text-sm text-base-content/60 mt-1">配置 OpenAI 兼容的 API 服务</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div class="form-control">
+                    <label class="label py-1">
+                        <span class="label-text">API Base URL</span>
+                    </label>
+                    <input type="text" class="input input-bordered input-sm w-full"
+                        placeholder="https://api.openai.com/v1（留空使用默认）" [ngModel]="aiSettings().baseUrl"
+                        (ngModelChange)="updateAIField('baseUrl', $event)" />
+                    <label class="label py-1">
+                        <span class="label-text-alt text-base-content/50">支持 OpenAI 兼容的第三方服务</span>
+                    </label>
+                </div>
+
+                <div class="form-control">
+                    <label class="label py-1">
+                        <span class="label-text">API Key</span>
+                    </label>
+                    <input type="password" class="input input-bordered input-sm w-full" placeholder="sk-..."
+                        [ngModel]="aiSettings().apiKey" (ngModelChange)="updateAIField('apiKey', $event)" />
+                    <label class="label py-1">
+                        @if (aiSettings().hasApiKey) {
+                        <span class="label-text-alt text-success">已配置</span>
+                        } @else {
+                        <span class="label-text-alt text-warning">未配置</span>
+                        }
+                    </label>
+                </div>
+
+                <div class="form-control">
+                    <label class="label py-1">
+                        <span class="label-text">模型</span>
+                    </label>
+                    <input type="text" class="input input-bordered input-sm w-full" placeholder="gpt-3.5-turbo"
+                        [ngModel]="aiSettings().model" (ngModelChange)="updateAIField('model', $event)" />
+                </div>
+            </div>
+
+            <div class="form-control mt-4">
+                <label class="label py-1">
+                    <span class="label-text">全局提示词</span>
+                    <button type="button" class="btn btn-ghost btn-xs" (click)="resetPrompt()">
+                        <lucide-icon [img]="icons.RotateCcw" class="w-3 h-3"></lucide-icon>
+                        重置为默认
+                    </button>
+                </label>
+                <textarea class="textarea textarea-bordered textarea-sm w-full" rows="6"
+                    placeholder="定义 AI 的角色和回复风格，自动回复规则留空时将使用此提示词" [ngModel]="aiSettings().systemPrompt"
+                    (ngModelChange)="updateAIField('systemPrompt', $event)"></textarea>
+                <label class="label py-1">
+                    <span class="label-text-alt text-base-content/50">自动回复规则的 AI 提示词留空时将自动填入此内容</span>
+                </label>
+            </div>
+
+            <div class="flex gap-2 mt-4">
+                <button class="btn btn-primary btn-sm" [disabled]="savingAI()" (click)="saveAISettings()">
+                    @if (savingAI()) {
+                    <span class="loading loading-spinner loading-xs"></span>
+                    } @else {
+                    <lucide-icon [img]="icons.Save" class="w-4 h-4"></lucide-icon>
+                    }
+                    保存设置
+                </button>
+                <button class="btn btn-ghost btn-sm" [disabled]="testingAI() || !aiSettings().hasApiKey"
+                    (click)="testAIConnection()">
+                    @if (testingAI()) {
+                    <span class="loading loading-spinner loading-xs"></span>
+                    } @else {
+                    <lucide-icon [img]="icons.Zap" class="w-4 h-4"></lucide-icon>
+                    }
+                    测试连接
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,5 @@
+import { Fish, Users, Plus, RefreshCw, Wifi, MessageSquare, Play, Square, Trash2, HelpCircle, Edit, Save, Menu, X, ChevronLeft, ChevronRight, LayoutDashboard, Package, ShoppingCart, Bot, MessageCircle, Upload, Settings, FileText, UserCog, ExternalLink, Sun, Moon, Monitor, History, Radio, Image, Truck, Home, ShieldAlert, FileQuestion, Search, Download, Zap, RotateCcw, Pencil, Info, GitBranch, Minus, ArrowLeft, Box, Clock, Link, ArrowRight, FileJson, AlertCircle, User, Lock, LogIn } from 'lucide-angular';
+
+export const ICONS = {
+    Fish, Users, Plus, RefreshCw, Wifi, MessageSquare, Play, Square, Trash2, HelpCircle, Edit, Save, Menu, X, ChevronLeft, ChevronRight, LayoutDashboard, Package, ShoppingCart, Bot, MessageCircle, Upload, Settings, FileText, UserCog, ExternalLink, Sun, Moon, Monitor, History, Radio, Image, Truck, Home, ShieldAlert, FileQuestion, Search, Download, Zap, RotateCcw, Pencil, Info, GitBranch, Minus, ArrowLeft, Box, Clock, Link, ArrowRight, FileJson, AlertCircle, User, Lock, LogIn
+};

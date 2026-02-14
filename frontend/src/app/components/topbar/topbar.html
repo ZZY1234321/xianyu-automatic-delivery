@@ -1,0 +1,15 @@
+<header class="topbar" [class.sidebar-collapsed]="sidebarCollapsed()">
+    <div class="topbar-content">
+        <h1 class="topbar-title">{{ title() }}</h1>
+        <div class="topbar-status">
+            <div class="status-item">
+                <lucide-icon [img]="icons.Wifi" class="status-icon text-success"></lucide-icon>
+                <span>在线: <span class="text-success font-medium">{{ activeCount() }}</span></span>
+            </div>
+            <div class="status-item">
+                <lucide-icon [img]="icons.MessageSquare" class="status-icon text-info"></lucide-icon>
+                <span>消息: <span class="text-info font-medium">{{ messageCount() }}</span></span>
+            </div>
+        </div>
+    </div>
+</header>

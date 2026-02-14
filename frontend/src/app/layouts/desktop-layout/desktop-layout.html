@@ -1,0 +1,4 @@
+<div class="desktop-layout" [class.sidebar-collapsed]="sidebarCollapsed()">
+    <app-sidebar [currentView]="currentView()" (viewChange)="onViewChange($event)"
+        (collapsedChange)="onSidebarCollapse($event)" />
+</div>

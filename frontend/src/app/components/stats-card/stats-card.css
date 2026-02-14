@@ -1,0 +1,71 @@
+.stats-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: oklch(var(--b1));
+    border-radius: 1rem;
+    border: 1px solid oklch(var(--b3) / 0.5);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.03);
+    transition: all 0.2s ease;
+}
+
+.stats-card:hover {
+    box-shadow: 0 4px 12px 0 rgb(0 0 0 / 0.05);
+    transform: translateY(-1px);
+}
+
+.stats-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    flex-shrink: 0;
+}
+
+.stats-card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.stats-card-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: oklch(var(--bc) / 0.6);
+    margin-bottom: 0.25rem;
+}
+
+.stats-card-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: oklch(var(--bc));
+}
+
+/* 颜色变体 */
+.stats-card--primary .stats-card-icon {
+    background: linear-gradient(135deg, oklch(var(--p) / 0.15) 0%, oklch(var(--p) / 0.08) 100%);
+    color: oklch(var(--p));
+}
+
+.stats-card--success .stats-card-icon {
+    background: linear-gradient(135deg, oklch(var(--su) / 0.15) 0%, oklch(var(--su) / 0.08) 100%);
+    color: oklch(var(--su));
+}
+
+.stats-card--info .stats-card-icon {
+    background: linear-gradient(135deg, oklch(var(--in) / 0.15) 0%, oklch(var(--in) / 0.08) 100%);
+    color: oklch(var(--in));
+}
+
+.stats-card--warning .stats-card-icon {
+    background: linear-gradient(135deg, oklch(var(--wa) / 0.15) 0%, oklch(var(--wa) / 0.08) 100%);
+    color: oklch(var(--wa));
+}
+
+.stats-card--error .stats-card-icon {
+    background: linear-gradient(135deg, oklch(var(--er) / 0.15) 0%, oklch(var(--er) / 0.08) 100%);
+    color: oklch(var(--er));
+}

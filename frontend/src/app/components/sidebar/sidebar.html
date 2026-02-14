@@ -1,0 +1,102 @@
+<aside class="sidebar" [class.collapsed]="collapsed()">
+    <!-- Logo 区域 -->
+    <div class="sidebar-header">
+        <span class="logo-text">AutoMangBoSow</span>
+    </div>
+
+    <!-- 导航菜单 -->
+    <ul class="sidebar-menu">
+        <!-- System - Dashboard -->
+        <li>
+            <a routerLink="/dashboard" routerLinkActive="active text-primary bg-primary/10" class="sidebar-menu-item"
+                (click)="setView('dashboard')">
+                <lucide-icon [img]="icons.LayoutDashboard" class="sidebar-menu-icon"></lucide-icon>
+                <span class="sidebar-menu-text">仪表盘</span>
+            </a>
+        </li>
+
+        <li class="sidebar-divider"></li>
+
+        <!-- Goofish -->
+        <li>
+            <a routerLink="/accounts" routerLinkActive="active text-primary bg-primary/10" class="sidebar-menu-item"
+                (click)="setView('accounts')">
+                <lucide-icon [img]="icons.Users" class="sidebar-menu-icon"></lucide-icon>
+                <span class="sidebar-menu-text">账号管理</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/goods" routerLinkActive="active text-primary bg-primary/10" class="sidebar-menu-item"
+                (click)="setView('goods')">
+                <lucide-icon [img]="icons.Package" class="sidebar-menu-icon"></lucide-icon>
+                <span class="sidebar-menu-text">商品管理</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/orders" routerLinkActive="active text-primary bg-primary/10" class="sidebar-menu-item"
+                (click)="setView('orders')">
+                <lucide-icon [img]="icons.ShoppingCart" class="sidebar-menu-icon"></lucide-icon>
+                <span class="sidebar-menu-text">订单管理</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/conversations" routerLinkActive="active text-primary bg-primary/10"
+                class="sidebar-menu-item" (click)="setView('conversations')">
+                <lucide-icon [img]="icons.MessageCircle" class="sidebar-menu-icon"></lucide-icon>
+                <span class="sidebar-menu-text">对话消息</span>
+            </a>
+        </li>
+
+        <li class="sidebar-divider"></li>
+
+        <!-- Bot -->
+        <li>
+            <a routerLink="/autosell" routerLinkActive="active text-primary bg-primary/10" class="sidebar-menu-item"
+                (click)="setView('autosell')">
+                <lucide-icon [img]="icons.Upload" class="sidebar-menu-icon"></lucide-icon>
+                <span class="sidebar-menu-text">自动发货</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/workflow" routerLinkActive="active text-primary bg-primary/10" class="sidebar-menu-item"
+                (click)="setView('workflow')">
+                <lucide-icon [img]="icons.GitBranch" class="sidebar-menu-icon"></lucide-icon>
+                <span class="sidebar-menu-text">发货流程</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/autoreply" routerLinkActive="active text-primary bg-primary/10" class="sidebar-menu-item"
+                (click)="setView('autoreply')">
+                <lucide-icon [img]="icons.Bot" class="sidebar-menu-icon"></lucide-icon>
+                <span class="sidebar-menu-text">自动回复</span>
+            </a>
+        </li>
+
+        <li class="sidebar-divider"></li>
+
+        <!-- System -->
+        <li>
+            <a routerLink="/logs" routerLinkActive="active text-primary bg-primary/10" class="sidebar-menu-item"
+                (click)="setView('logs')">
+                <lucide-icon [img]="icons.FileText" class="sidebar-menu-icon"></lucide-icon>
+                <span class="sidebar-menu-text">系统日志</span>
+            </a>
+        </li>
+        <li>
+            <a routerLink="/setting" routerLinkActive="active text-primary bg-primary/10" class="sidebar-menu-item"
+                (click)="setView('setting')">
+                <lucide-icon [img]="icons.Settings" class="sidebar-menu-icon"></lucide-icon>
+                <span class="sidebar-menu-text">系统设置</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- 底部收起按钮 -->
+    <div class="sidebar-footer">
+        <button (click)="toggleCollapse()" class="collapse-btn">
+            <lucide-icon [img]="collapsed() ? icons.ChevronRight : icons.ChevronLeft"
+                class="collapse-icon"></lucide-icon>
+            <span class="collapse-text">收起</span>
+        </button>
+    </div>
+</aside>

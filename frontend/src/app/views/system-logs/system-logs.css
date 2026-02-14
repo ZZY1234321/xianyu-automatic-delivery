@@ -1,0 +1,27 @@
+.log-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.log-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.log-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.log-container::-webkit-scrollbar-thumb {
+    background: oklch(var(--bc) / 0.2);
+    border-radius: 3px;
+}
+
+.log-container table {
+    font-size: 0.75rem;
+}
+
+.log-container td {
+    padding: 0.25rem 0.5rem;
+    vertical-align: top;
+}

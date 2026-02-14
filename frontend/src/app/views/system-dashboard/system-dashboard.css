@@ -1,0 +1,30 @@
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap-grid);
+    margin-bottom: var(--spacing-section);
+}
+
+@media (min-width: 640px) {
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 仪表盘标题样式 */
+.dashboard-header {
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: oklch(var(--bc));
+    letter-spacing: -0.02em;
+}
+
+.dashboard-subtitle {
+    font-size: 0.875rem;
+    color: oklch(var(--bc) / 0.6);
+    margin-top: 0.25rem;
+}

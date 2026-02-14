@@ -1,0 +1,102 @@
+<div class="page-container">
+    <!-- 筛选栏 -->
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body py-4">
+            <div class="flex items-center gap-4 flex-wrap">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-base-content/60">账号筛选:</span>
+                    <div class="dropdown" [class.dropdown-open]="showAccountDropdown()">
+                        <div tabindex="0" role="button"
+                            class="select select-bordered select-sm w-48 flex items-center"
+                            (click)="showAccountDropdown.set(!showAccountDropdown())">
+                            {{ getAccountLabel(selectedAccountId()) }}
+                        </div>
+                        <ul tabindex="0" style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-50 w-48 p-2 shadow-lg max-h-60 overflow-y-auto">
+                            <li><a (click)="selectAccount('')" [class.active]="!selectedAccountId()">全部账号</a></li>
+                            @for (account of accounts(); track account.id) {
+                            <li><a (click)="selectAccount(account.id)" [class.active]="selectedAccountId() === account.id">{{ account.nickname || account.id }}</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-base-content/60">状态筛选:</span>
+                    <div class="dropdown" [class.dropdown-open]="showStatusDropdown()">
+                        <div tabindex="0" role="button"
+                            class="select select-bordered select-sm w-32 flex items-center"
+                            (click)="showStatusDropdown.set(!showStatusDropdown())">
+                            {{ getStatusLabel(selectedStatus()) }}
+                        </div>
+                        <ul tabindex="0" style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-50 w-32 p-2 shadow-lg">
+                            @for (opt of statusOptions; track opt.value) {
+                            <li><a (click)="selectStatus(opt.value)" [class.active]="selectedStatus() === opt.value">{{ opt.label }}</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-ghost" (click)="loadGoods()" [disabled]="loading()">
+                    <lucide-icon [img]="icons.RefreshCw" class="w-4 h-4" [class.animate-spin]="loading()"></lucide-icon>
+                    刷新
+                </button>
+                <span class="text-sm text-base-content/60 ml-auto">
+                    共 {{ totalCount() }} 件商品
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 商品列表 -->
+    @if (loading()) {
+    <div class="flex justify-center py-12">
+        <span class="loading loading-spinner loading-lg"></span>
+    </div>
+    } @else if (filteredGoods().length === 0) {
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body items-center py-12">
+            <lucide-icon [img]="icons.Package" class="w-12 h-12 text-base-content/30"></lucide-icon>
+            <p class="text-base-content/60 mt-2">暂无商品</p>
+        </div>
+    </div>
+    } @else {
+    <div class="goods-grid">
+        @for (item of filteredGoods(); track item.id) {
+        <div class="card bg-base-100 card-hover">
+            <figure class="relative">
+                <img [src]="item.picUrl" [alt]="item.title" class="goods-image" loading="lazy" />
+                @if (item.hasVideo) {
+                <div class="absolute top-2 left-2">
+                    <span class="badge badge-sm badge-neutral">视频</span>
+                </div>
+                }
+                <div class="absolute top-2 right-2">
+                    <span class="badge badge-sm" [class]="getStatusClass(item.itemStatus)">
+                        {{ getStatusText(item.itemStatus) }}
+                    </span>
+                </div>
+            </figure>
+            <div class="card-body p-3">
+                <h3 class="card-title text-sm line-clamp-2">{{ item.title }}</h3>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-lg font-bold text-error">¥{{ item.price }}</span>
+                    @if (item.postInfo) {
+                    <span class="text-xs text-base-content/60">{{ item.postInfo }}</span>
+                    }
+                </div>
+                @if (item.accountNickname) {
+                <div class="text-xs text-base-content/50 mt-1 truncate">
+                    {{ item.accountNickname }}
+                </div>
+                }
+                <div class="card-actions mt-2">
+                    <a [href]="'https://www.goofish.com/item?id=' + item.id" target="_blank" rel="noopener noreferrer"
+                        class="btn btn-sm btn-outline btn-primary w-full">
+                        <lucide-icon [img]="icons.ExternalLink" class="w-4 h-4"></lucide-icon>
+                        浏览商品
+                    </a>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>

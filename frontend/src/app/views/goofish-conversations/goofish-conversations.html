@@ -1,0 +1,146 @@
+<div class="page-container">
+    <!-- 对话列表 -->
+    @if (!selectedConversation()) {
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body p-4">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="card-title text-lg">对话消息 <span class="text-sm font-normal text-base-content/50">({{ total()
+                        }})</span></h2>
+                <button class="btn btn-sm btn-ghost" (click)="loadConversations()" [disabled]="loading()">
+                    <lucide-icon [img]="icons.RefreshCw" class="w-4 h-4" [class.animate-spin]="loading()"></lucide-icon>
+                </button>
+            </div>
+
+            @if (loading()) {
+            <div class="flex justify-center py-8">
+                <span class="loading loading-spinner loading-md"></span>
+            </div>
+            } @else if (conversations().length === 0) {
+            <div class="text-center py-8 text-base-content/60">
+                <lucide-icon [img]="icons.MessageCircle" class="w-12 h-12 mx-auto mb-2 opacity-30"></lucide-icon>
+                <p>暂无对话消息</p>
+            </div>
+            } @else {
+            <div class="space-y-2">
+                @for (conv of conversations(); track conv.accountId + conv.chatId) {
+                <div class="flex items-center gap-3 p-3 list-item-hover cursor-pointer"
+                    (click)="openConversation(conv)">
+                    <div class="avatar">
+                        @if (conv.userAvatar) {
+                        <div class="w-10 rounded-full">
+                            <img [src]="conv.userAvatar" [alt]="conv.userName" />
+                        </div>
+                        } @else {
+                        <div class="bg-neutral text-neutral-content rounded-full w-10 placeholder">
+                            <span>{{ conv.userName.charAt(0) }}</span>
+                        </div>
+                        }
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium truncate">{{ conv.userName }}</span>
+                            <span class="badge badge-ghost badge-xs">{{ conv.accountNickname }}</span>
+                            <span class="flex-1"></span>
+                            <span class="text-xs text-base-content/50">{{ formatTime(conv.lastTime) }}</span>
+                        </div>
+                        <p class="text-sm text-base-content/60 truncate">{{ conv.lastMessage }}</p>
+                    </div>
+                    @if (conv.unread > 0) {
+                    <span class="badge badge-primary badge-sm">{{ conv.unread }}</span>
+                    }
+                </div>
+                }
+            </div>
+
+            @if (hasMore()) {
+            <div class="text-center mt-4">
+                <button class="btn btn-sm btn-ghost" (click)="loadMoreConversations()" [disabled]="loadingMore()">
+                    @if (loadingMore()) {
+                    <span class="loading loading-spinner loading-xs"></span>
+                    } @else {
+                    加载更多
+                    }
+                </button>
+            </div>
+            }
+            }
+        </div>
+    </div>
+    }
+
+    <!-- 对话详情 -->
+    @if (selectedConversation()) {
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body p-4">
+            <div class="flex items-center gap-3 mb-4">
+                <button class="btn btn-sm btn-ghost btn-circle" (click)="closeConversation()">
+                    <lucide-icon [img]="icons.ChevronLeft" class="w-5 h-5"></lucide-icon>
+                </button>
+                <div class="avatar">
+                    @if (selectedConversation()!.userAvatar) {
+                    <div class="w-8 rounded-full">
+                        <img [src]="selectedConversation()!.userAvatar" [alt]="selectedConversation()!.userName" />
+                    </div>
+                    } @else {
+                    <div class="bg-neutral text-neutral-content rounded-full w-8 placeholder">
+                        <span>{{ selectedConversation()!.userName.charAt(0) }}</span>
+                    </div>
+                    }
+                </div>
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-2">
+                        <span class="font-medium">{{ selectedConversation()!.userName }}</span>
+                        <span class="badge badge-ghost badge-xs">{{ selectedConversation()!.accountNickname }}</span>
+                        <span class="text-xs text-base-content/50">({{ selectedConversation()!.messageCount }}
+                            条消息)</span>
+                    </div>
+                    <span class="text-xs text-base-content/40 font-mono">chatId: {{ selectedConversation()!.chatId
+                        }}</span>
+                </div>
+            </div>
+
+            <div class="divider my-2"></div>
+
+            @if (hasMoreMessages()) {
+            <div class="text-center mb-3">
+                <button class="btn btn-xs btn-ghost" (click)="loadMoreMessages()" [disabled]="loadingMoreMessages()">
+                    @if (loadingMoreMessages()) {
+                    <span class="loading loading-spinner loading-xs"></span>
+                    } @else {
+                    加载更早消息
+                    }
+                </button>
+            </div>
+            }
+
+            <div #messagesContainer class="space-y-3 max-h-96 overflow-y-auto">
+                @for (msg of selectedConversation()!.messages; track msg.id) {
+                @if (msg.direction === 'in') {
+                <div class="chat chat-start">
+                    <div class="chat-header text-xs text-base-content/50 mb-1">
+                        {{ msg.senderName }}
+                        <time class="ml-1">{{ msg.msgTime }}</time>
+                        @if (msg.msgId) {
+                        <span class="ml-1 opacity-40 font-mono text-[10px]">{{ msg.msgId.substring(0, 8) }}</span>
+                        }
+                    </div>
+                    <div class="chat-bubble">{{ msg.content }}</div>
+                </div>
+                } @else {
+                <div class="chat chat-end">
+                    <div class="chat-header text-xs text-base-content/50 mb-1">
+                        {{ msg.senderName }}
+                        <time class="ml-1">{{ msg.msgTime }}</time>
+                        @if (msg.msgId) {
+                        <span class="ml-1 opacity-40 font-mono text-[10px]">{{ msg.msgId.substring(0, 8) }}</span>
+                        }
+                    </div>
+                    <div class="chat-bubble chat-bubble-primary">{{ msg.content }}</div>
+                </div>
+                }
+                }
+            </div>
+        </div>
+    </div>
+    }
+</div>

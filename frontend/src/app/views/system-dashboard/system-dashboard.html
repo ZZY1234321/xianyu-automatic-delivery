@@ -1,0 +1,13 @@
+<div class="animate-fade-in">
+    <div class="dashboard-header">
+        <h2 class="dashboard-title">仪表盘</h2>
+        <p class="dashboard-subtitle">系统概览与状态监控</p>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="stats-grid">
+        <app-stats-card [icon]="icons.Users" label="总账号" [value]="accounts().length" color="primary" />
+        <app-stats-card [icon]="icons.Wifi" label="在线" [value]="status()?.activeCount ?? 0" color="success" />
+        <app-stats-card [icon]="icons.MessageSquare" label="消息" [value]="status()?.messageCount ?? 0" color="info" />
+    </div>
+</div>

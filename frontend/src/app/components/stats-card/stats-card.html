@@ -1,0 +1,9 @@
+<div class="stats-card" [class]="'stats-card--' + color()">
+    <div class="stats-card-icon">
+        <lucide-icon [img]="icon()" class="w-6 h-6"></lucide-icon>
+    </div>
+    <div class="stats-card-content">
+        <div class="stats-card-label">{{ label() }}</div>
+        <div class="stats-card-value">{{ value() }}</div>
+    </div>
+</div>

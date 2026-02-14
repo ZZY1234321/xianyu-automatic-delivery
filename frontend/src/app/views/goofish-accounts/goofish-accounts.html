@@ -1,0 +1,252 @@
+<div class="w-full">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">账号管理</h2>
+    </div>
+
+    <!-- 响应式两栏布局 -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <!-- 左侧：添加/编辑表单 -->
+        <div class="xl:col-span-1">
+            <div class="card bg-base-100 shadow">
+                <div class="card-body">
+                    <h3 class="card-title text-lg">{{ editingId() ? '编辑账号' : '添加账号' }}</h3>
+
+                    @if (error()) {
+                    <div class="alert alert-error py-2">
+                        <span>{{ error() }}</span>
+                    </div>
+                    }
+
+                    @if (success()) {
+                    <div class="alert alert-success py-2">
+                        <span>{{ success() }}</span>
+                    </div>
+                    }
+
+                    <form (ngSubmit)="handleSubmit()" class="space-y-4">
+                        @if (editingId()) {
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">账号ID</span>
+                            </label>
+                            <input [value]="editingId()" type="text" disabled
+                                class="input input-bordered input-sm w-full font-mono bg-base-200" />
+                        </div>
+                        }
+
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">Cookies @if (!editingId()) {<span
+                                        class="text-error">*</span>}</span>
+                            </label>
+                            <textarea [(ngModel)]="form.cookies" name="cookies"
+                                [placeholder]="editingId() ? '留空保持原有Cookies，填写则更新' : '粘贴Cookie字符串，系统将自动获取用户信息'" rows="4"
+                                class="textarea textarea-bordered textarea-sm w-full font-mono text-xs"></textarea>
+                            @if (!editingId()) {
+                            <label class="label py-1">
+                                <span class="label-text-alt text-base-content/50">账号ID将从Cookie中自动获取</span>
+                            </label>
+                            }
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">备注</span>
+                            </label>
+                            <input [(ngModel)]="form.remark" name="remark" type="text" placeholder="可选，方便识别"
+                                class="input input-bordered input-sm w-full" />
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button type="submit" [disabled]="submitting()" class="btn btn-primary btn-sm flex-1 gap-1">
+                                @if (submitting()) {
+                                <span class="loading loading-spinner loading-xs"></span>
+                                } @else {
+                                <lucide-icon [img]="editingId() ? icons.Save : icons.Plus"
+                                    class="w-4 h-4"></lucide-icon>
+                                }
+                                {{ editingId() ? '保存' : '添加' }}
+                            </button>
+                            @if (editingId()) {
+                            <button type="button" (click)="cancelEdit()" class="btn btn-ghost btn-sm">取消</button>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 帮助卡片 -->
+            <div class="card bg-base-100 shadow mt-4">
+                <div class="card-body py-4">
+                    <div class="flex items-center gap-2">
+                        <lucide-icon [img]="icons.HelpCircle" class="w-4 h-4 text-base-content/50"></lucide-icon>
+                        <span class="text-sm font-medium">如何获取 Cookies？</span>
+                    </div>
+                    <ol class="text-xs text-base-content/60 list-decimal list-inside space-y-0.5 mt-2">
+                        <li>登录闲鱼网页版 (goofish.com)</li>
+                        <li>按 F12 打开开发者工具</li>
+                        <li>切换到 Network 标签</li>
+                        <li>刷新页面，点击任意请求</li>
+                        <li>在 Headers 中找到 Cookie</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：账号列表 -->
+        <div class="xl:col-span-2">
+            <div class="card bg-base-100 shadow">
+                @if (loading()) {
+                <div class="card-body items-center py-12">
+                    <span class="loading loading-spinner loading-lg text-primary"></span>
+                </div>
+                } @else if (accounts().length === 0) {
+                <div class="card-body items-center py-12 text-base-content/50">
+                    暂无账号，请在左侧添加
+                </div>
+                } @else {
+                <!-- 桌面端表格 -->
+                <div class="overflow-x-auto hidden lg:block">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>账号</th>
+                                <th>备注</th>
+                                <th>状态</th>
+                                <th>更新时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (account of accounts(); track account.id) {
+                            <tr class="hover">
+                                <td>
+                                    <div class="flex items-center gap-3">
+                                        <div class="avatar">
+                                            <div class="w-10 h-10 rounded-full bg-base-200">
+                                                @if (account.avatar) {
+                                                <img [src]="account.avatar" [alt]="account.nickname || account.id" />
+                                                } @else {
+                                                <div
+                                                    class="w-full h-full flex items-center justify-center text-base-content/30">
+                                                    <lucide-icon [img]="icons.Users" class="w-5 h-5"></lucide-icon>
+                                                </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">{{ account.nickname || '未知用户' }}</div>
+                                            <div class="text-xs text-base-content/50 font-mono">{{ account.id }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ account.remark || '-' }}</td>
+                                <td>
+                                    @if (isConnected(account.id)) {
+                                    <span class="badge badge-success badge-sm gap-1">
+                                        <span class="w-1.5 h-1.5 bg-success-content rounded-full animate-pulse"></span>
+                                        在线
+                                    </span>
+                                    } @else {
+                                    <span class="badge badge-ghost badge-sm">离线</span>
+                                    }
+                                </td>
+                                <td class="text-base-content/50 text-xs">{{ formatTime(account.updatedAt) }}</td>
+                                <td>
+                                    <div class="flex gap-1">
+                                        <button (click)="onRefreshInfo(account.id)"
+                                            [disabled]="refreshingId() === account.id"
+                                            class="btn btn-ghost btn-xs btn-square" title="刷新用户信息">
+                                            <lucide-icon [img]="icons.RefreshCw"
+                                                [class]="refreshingId() === account.id ? 'w-3.5 h-3.5 animate-spin' : 'w-3.5 h-3.5'"></lucide-icon>
+                                        </button>
+                                        <button (click)="onEdit(account)" class="btn btn-ghost btn-xs btn-square"
+                                            title="编辑">
+                                            <lucide-icon [img]="icons.Edit" class="w-3.5 h-3.5"></lucide-icon>
+                                        </button>
+                                        @if (!isConnected(account.id)) {
+                                        <button (click)="onStart(account.id)" class="btn btn-success btn-xs btn-square"
+                                            title="启动">
+                                            <lucide-icon [img]="icons.Play" class="w-3.5 h-3.5"></lucide-icon>
+                                        </button>
+                                        } @else {
+                                        <button (click)="onStop(account.id)" class="btn btn-warning btn-xs btn-square"
+                                            title="停止">
+                                            <lucide-icon [img]="icons.Square" class="w-3.5 h-3.5"></lucide-icon>
+                                        </button>
+                                        }
+                                        <button (click)="onDelete(account.id)" class="btn btn-error btn-xs btn-square"
+                                            title="删除">
+                                            <lucide-icon [img]="icons.Trash2" class="w-3.5 h-3.5"></lucide-icon>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 移动端卡片 -->
+                <div class="lg:hidden p-4 space-y-3">
+                    @for (account of accounts(); track account.id) {
+                    <div class="card card-bordered">
+                        <div class="card-body p-3">
+                            <div class="flex items-center gap-3">
+                                <div class="avatar">
+                                    <div class="w-12 h-12 rounded-full bg-base-200">
+                                        @if (account.avatar) {
+                                        <img [src]="account.avatar" [alt]="account.nickname || account.id" />
+                                        } @else {
+                                        <div
+                                            class="w-full h-full flex items-center justify-center text-base-content/30">
+                                            <lucide-icon [img]="icons.Users" class="w-6 h-6"></lucide-icon>
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-medium">{{ account.nickname || '未知用户' }}</span>
+                                        @if (isConnected(account.id)) {
+                                        <span class="badge badge-success badge-sm gap-1">
+                                            <span
+                                                class="w-1.5 h-1.5 bg-success-content rounded-full animate-pulse"></span>
+                                            在线
+                                        </span>
+                                        } @else {
+                                        <span class="badge badge-ghost badge-sm">离线</span>
+                                        }
+                                    </div>
+                                    <div class="text-xs text-base-content/50 font-mono">{{ account.id }}</div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-base-content/60 mt-2">
+                                <div>备注: {{ account.remark || '-' }}</div>
+                                <div>更新: {{ formatTime(account.updatedAt) }}</div>
+                            </div>
+                            <div class="card-actions justify-end mt-2">
+                                <button (click)="onRefreshInfo(account.id)" [disabled]="refreshingId() === account.id"
+                                    class="btn btn-ghost btn-xs">
+                                    @if (refreshingId() === account.id) {
+                                    <span class="loading loading-spinner loading-xs"></span>
+                                    }
+                                    刷新
+                                </button>
+                                <button (click)="onEdit(account)" class="btn btn-ghost btn-xs">编辑</button>
+                                @if (!isConnected(account.id)) {
+                                <button (click)="onStart(account.id)" class="btn btn-success btn-xs">启动</button>
+                                } @else {
+                                <button (click)="onStop(account.id)" class="btn btn-warning btn-xs">停止</button>
+                                }
+                                <button (click)="onDelete(account.id)" class="btn btn-error btn-xs">删除</button>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

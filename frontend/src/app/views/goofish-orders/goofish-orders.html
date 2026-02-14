@@ -1,0 +1,288 @@
+<div class="page-container">
+    <!-- 筛选栏 -->
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body py-4">
+            <div class="flex items-center gap-4 flex-wrap">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-base-content/60">账号:</span>
+                    <div class="dropdown" [class.dropdown-open]="showAccountDropdown()">
+                        <div tabindex="0" role="button"
+                            class="select select-bordered select-sm w-48 flex items-center"
+                            (click)="showAccountDropdown.set(!showAccountDropdown())">
+                            {{ getAccountLabel(selectedAccountId()) }}
+                        </div>
+                        <ul tabindex="0" style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-50 w-48 p-2 shadow-lg max-h-60 overflow-y-auto">
+                            <li><a (click)="selectAccount('')" [class.active]="!selectedAccountId()">全部账号</a></li>
+                            @for (account of accounts(); track account.id) {
+                            <li><a (click)="selectAccount(account.id)" [class.active]="selectedAccountId() === account.id">{{ account.nickname || account.id }}</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-base-content/60">状态:</span>
+                    <div class="dropdown" [class.dropdown-open]="showStatusDropdown()">
+                        <div tabindex="0" role="button"
+                            class="select select-bordered select-sm w-32 flex items-center"
+                            (click)="showStatusDropdown.set(!showStatusDropdown())">
+                            {{ getStatusLabel(selectedStatus()) }}
+                        </div>
+                        <ul tabindex="0" style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-50 w-32 p-2 shadow-lg">
+                            @for (opt of statusOptions; track opt.value) {
+                            <li><a (click)="selectStatus(opt.value)" [class.active]="selectedStatus() === opt.value">{{ opt.label }}</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-ghost" [disabled]="loading()" (click)="loadOrders()">
+                    <lucide-icon [img]="icons.RefreshCw" class="w-4 h-4" [class.animate-spin]="loading()"></lucide-icon>
+                    刷新
+                </button>
+                <span class="text-sm text-base-content/60 ml-auto">共 {{ total() }} 条订单</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 手动获取订单 -->
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body py-4">
+            <div class="flex items-center gap-2 mb-3">
+                <lucide-icon [img]="icons.Search" class="w-4 h-4 text-base-content/60"></lucide-icon>
+                <span class="text-sm font-medium">手动获取订单</span>
+            </div>
+            <div class="flex flex-wrap gap-3 items-end">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-base-content/60">账号:</span>
+                    <div class="dropdown" [class.dropdown-open]="showManualAccountDropdown()">
+                        <div tabindex="0" role="button"
+                            class="select select-bordered select-sm w-48 flex items-center"
+                            (click)="showManualAccountDropdown.set(!showManualAccountDropdown())">
+                            {{ manualAccountId() ? getAccountLabel(manualAccountId()) : '选择账号' }}
+                        </div>
+                        <ul tabindex="0" style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-50 w-48 p-2 shadow-lg max-h-60 overflow-y-auto">
+                            @for (account of accounts(); track account.id) {
+                            <li><a (click)="selectManualAccount(account.id)" [class.active]="manualAccountId() === account.id">{{ account.nickname || account.id }}</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-48">
+                    <input type="text" class="input input-bordered input-sm w-full" placeholder="输入订单号"
+                        [ngModel]="manualOrderId()" (ngModelChange)="manualOrderId.set($event)">
+                </div>
+                <button class="btn btn-sm btn-primary" [disabled]="fetching() || !manualOrderId() || !manualAccountId()"
+                    (click)="fetchManualOrder()">
+                    @if (fetching()) {
+                    <span class="loading loading-spinner loading-xs"></span>
+                    } @else {
+                    <lucide-icon [img]="icons.Download" class="w-4 h-4"></lucide-icon>
+                    }
+                    获取
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订单列表 -->
+    @if (loading() && orders().length === 0) {
+    <div class="flex justify-center py-12">
+        <span class="loading loading-spinner loading-lg"></span>
+    </div>
+    } @else if (orders().length === 0) {
+    <div class="card bg-base-100 shadow-sm">
+        <div class="card-body items-center py-12">
+            <lucide-icon [img]="icons.ShoppingCart" class="w-12 h-12 text-base-content/30"></lucide-icon>
+            <p class="text-base-content/60 mt-2">暂无订单数据</p>
+            <p class="text-sm text-base-content/40">订单会在收到交易消息时自动记录</p>
+        </div>
+    </div>
+    } @else {
+    <!-- 桌面端表格 -->
+    <div class="card bg-base-100 shadow-sm hidden lg:block">
+        <div class="overflow-x-auto">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>商品</th>
+                        <th>订单号</th>
+                        <th>买家</th>
+                        <th>金额</th>
+                        <th>状态</th>
+                        <th>时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (order of orders(); track order.orderId) {
+                    <tr class="hover">
+                        <td>
+                            <div class="flex items-center gap-3">
+                                @if (order.itemPicUrl) {
+                                <img [src]="order.itemPicUrl" [alt]="order.itemTitle"
+                                    class="w-12 h-12 object-cover rounded">
+                                } @else {
+                                <div class="w-12 h-12 bg-base-200 rounded flex items-center justify-center">
+                                    <lucide-icon [img]="icons.Image" class="w-5 h-5 opacity-30"></lucide-icon>
+                                </div>
+                                }
+                                <div class="max-w-48">
+                                    <div class="font-medium truncate">{{ order.itemTitle || '未知商品' }}</div>
+                                    <div class="text-xs text-base-content/50">{{ getAccountNickname(order.accountId) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="font-mono text-xs">{{ order.orderId }}</td>
+                        <td>{{ order.buyerNickname || order.buyerUserId || '-' }}</td>
+                        <td class="text-primary font-medium">¥{{ order.price || '-' }}</td>
+                        <td>
+                            <span class="badge badge-sm" [class]="getStatusClass(order.status)">
+                                {{ getStatusText(order.status) }}
+                            </span>
+                        </td>
+                        <td class="text-xs text-base-content/50">
+                            <div class="space-y-0.5">
+                                <div>下单: {{ formatTime(order.orderTime) }}</div>
+                                @if (order.payTime) {
+                                <div>付款: {{ formatTime(order.payTime) }}</div>
+                                }
+                                @if (order.shipTime) {
+                                <div>发货: {{ formatTime(order.shipTime) }}</div>
+                                }
+                                @if (order.completeTime) {
+                                <div>完成: {{ formatTime(order.completeTime) }}</div>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex gap-1">
+                                @if (order.status === OrderStatus.PENDING_SHIPMENT) {
+                                <div class="dropdown dropdown-end">
+                                    <button tabindex="0" class="btn btn-primary btn-xs"
+                                        [disabled]="shipping() === order.orderId">
+                                        @if (shipping() === order.orderId) {
+                                        <span class="loading loading-spinner loading-xs"></span>
+                                        } @else {
+                                        <lucide-icon [img]="icons.Truck" class="w-3 h-3"></lucide-icon>
+                                        }
+                                    </button>
+                                    <ul tabindex="0"
+                                        style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-10 w-28 p-2 shadow">
+                                        <li><a (click)="shipOrder(order)">发货</a></li>
+                                        <li><a (click)="freeShipOrder(order)">免拼发货</a></li>
+                                    </ul>
+                                </div>
+                                }
+                                @if (order.status !== OrderStatus.CLOSED) {
+                                <button class="btn btn-ghost btn-xs btn-square"
+                                    [disabled]="refreshing() === order.orderId" (click)="refreshOrder(order)"
+                                    title="刷新">
+                                    <lucide-icon [img]="icons.RefreshCw" class="w-3 h-3"
+                                        [class.animate-spin]="refreshing() === order.orderId"></lucide-icon>
+                                </button>
+                                }
+                                <button class="btn btn-ghost btn-xs btn-square text-error"
+                                    [disabled]="deleting() === order.orderId" (click)="deleteOrder(order)" title="删除">
+                                    @if (deleting() === order.orderId) {
+                                    <span class="loading loading-spinner loading-xs"></span>
+                                    } @else {
+                                    <lucide-icon [img]="icons.Trash2" class="w-3 h-3"></lucide-icon>
+                                    }
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 移动端卡片 -->
+    <div class="lg:hidden space-y-3">
+        @for (order of orders(); track order.orderId) {
+        <div class="card bg-base-100 shadow-sm">
+            <div class="card-body p-4">
+                <div class="flex gap-3">
+                    @if (order.itemPicUrl) {
+                    <img [src]="order.itemPicUrl" [alt]="order.itemTitle" class="w-16 h-16 object-cover rounded-lg">
+                    } @else {
+                    <div class="w-16 h-16 bg-base-200 rounded-lg flex items-center justify-center">
+                        <lucide-icon [img]="icons.Image" class="w-6 h-6 opacity-30"></lucide-icon>
+                    </div>
+                    }
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between gap-2">
+                            <h3 class="font-medium truncate">{{ order.itemTitle || '未知商品' }}</h3>
+                            <span class="badge badge-sm flex-shrink-0" [class]="getStatusClass(order.status)">
+                                {{ getStatusText(order.status) }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-base-content/50 mt-1 font-mono">{{ order.orderId }}</p>
+                        <div class="flex items-center gap-3 mt-2">
+                            <span class="text-primary font-medium">¥{{ order.price || '-' }}</span>
+                            <span class="text-xs text-base-content/60">{{ order.buyerNickname || '-' }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-base-200">
+                    <div class="text-xs text-base-content/50 space-y-0.5">
+                        <div>下单: {{ formatTime(order.orderTime) }}</div>
+                        @if (order.payTime) {
+                        <div>付款: {{ formatTime(order.payTime) }}</div>
+                        }
+                        @if (order.shipTime) {
+                        <div>发货: {{ formatTime(order.shipTime) }}</div>
+                        }
+                        @if (order.completeTime) {
+                        <div>完成: {{ formatTime(order.completeTime) }}</div>
+                        }
+                    </div>
+                    <div class="flex gap-1">
+                        @if (order.status === OrderStatus.PENDING_SHIPMENT) {
+                        <button class="btn btn-primary btn-xs" [disabled]="shipping() === order.orderId"
+                            (click)="shipOrder(order)">
+                            @if (shipping() === order.orderId) {
+                            <span class="loading loading-spinner loading-xs"></span>
+                            } @else {
+                            <lucide-icon [img]="icons.Truck" class="w-3 h-3"></lucide-icon>
+                            }
+                            发货
+                        </button>
+                        }
+                        @if (order.status !== OrderStatus.CLOSED) {
+                        <button class="btn btn-ghost btn-xs" [disabled]="refreshing() === order.orderId"
+                            (click)="refreshOrder(order)">
+                            <lucide-icon [img]="icons.RefreshCw" class="w-3 h-3"
+                                [class.animate-spin]="refreshing() === order.orderId"></lucide-icon>
+                        </button>
+                        }
+                        <button class="btn btn-ghost btn-xs text-error" [disabled]="deleting() === order.orderId"
+                            (click)="deleteOrder(order)">
+                            <lucide-icon [img]="icons.Trash2" class="w-3 h-3"></lucide-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- 分页 -->
+    @if (total() > limit) {
+    <div class="flex justify-center gap-2">
+        <button class="btn btn-sm" [disabled]="offset() === 0" (click)="prevPage()">
+            <lucide-icon [img]="icons.ChevronLeft" class="w-4 h-4"></lucide-icon>
+            上一页
+        </button>
+        <span class="btn btn-sm btn-ghost pointer-events-none">
+            {{ offset() / limit + 1 }} / {{ Math.ceil(total() / limit) }}
+        </span>
+        <button class="btn btn-sm" [disabled]="offset() + limit >= total()" (click)="nextPage()">
+            下一页
+            <lucide-icon [img]="icons.ChevronRight" class="w-4 h-4"></lucide-icon>
+        </button>
+    </div>
+    }
+    }
+</div>

@@ -1,0 +1,20 @@
+<div class="app-container" [class.sidebar-collapsed]="sidebarCollapsed()">
+    <!-- 桌面端布局 -->
+    <app-desktop-layout class="desktop-only" [currentView]="currentView()" [activeCount]="status()?.activeCount ?? 0"
+        [messageCount]="status()?.messageCount ?? 0" (viewChange)="onViewChange($event)"
+        (sidebarCollapsedChange)="onSidebarCollapsed($event)">
+    </app-desktop-layout>
+
+    <!-- 移动端布局 -->
+    <app-mobile-layout class="mobile-only" [currentView]="currentView()" [activeCount]="status()?.activeCount ?? 0"
+        [messageCount]="status()?.messageCount ?? 0" (viewChange)="onViewChange($event)">
+    </app-mobile-layout>
+
+    <!-- 路由内容区域 -->
+    <main class="route-content">
+        <router-outlet />
+    </main>
+
+    <!-- 全局对话框 -->
+    <app-dialog />
+</div>

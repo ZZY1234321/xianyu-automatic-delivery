@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build outputs
+dist/
+public/
+frontend/dist/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
+# Keep docs public folder
+!docs/public/
+
+# Data
+data/
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Angular
+frontend/.angular/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Reference projects
+.ReferenceProjects/

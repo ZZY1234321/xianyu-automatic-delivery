@@ -1,9 +1,12 @@
 name: Deploy VitePress to GitHub Pages
 
+# 已禁用 - 如需启用文档部署，请取消注释
+# on:
+#   push:
+#     branches: [main]
+#   workflow_dispatch:
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+  workflow_dispatch:  # 仅手动触发
 
 permissions:
   contents: read

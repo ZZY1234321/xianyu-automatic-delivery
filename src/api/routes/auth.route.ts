@@ -9,8 +9,8 @@ import { db } from '../../db/connection.js'
 
 // 认证配置
 const AUTH_CONFIG = {
-    username: 'CDYBC',
-    password: 'wodemima1'
+    username: 'guangfeng',
+    password: '55555y'
 }
 
 // 生成 token

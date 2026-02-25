@@ -23,6 +23,7 @@ export const API_METHODS = {
     USER_INFO: 'mtop.idle.web.user.page.nav',
     LOGIN_USER: 'mtop.taobao.idlemessage.pc.loginuser.get',
     ITEM_LIST: 'mtop.idle.web.xyh.item.list',
+    ITEM_DETAIL: 'mtop.taobao.idle.pc.detail',  // 商品详情API
     USER_HEAD: 'mtop.idle.web.user.page.head',
     HAS_LOGIN: 'newlogin/hasLogin.do',
     ORDER_DETAIL: 'mtop.idle.web.trade.order.detail',
@@ -46,6 +47,7 @@ export const API_ENDPOINTS = {
     USER_INFO: buildApiUrl(API_METHODS.USER_INFO),
     LOGIN_USER: buildApiUrl(API_METHODS.LOGIN_USER),
     ITEM_LIST: buildApiUrl(API_METHODS.ITEM_LIST),
+    ITEM_DETAIL: buildApiUrl(API_METHODS.ITEM_DETAIL),
     USER_HEAD: buildApiUrl(API_METHODS.USER_HEAD),
     ORDER_DETAIL: buildApiUrl(API_METHODS.ORDER_DETAIL),
     CONFIRM_SHIPMENT: buildApiUrl(API_METHODS.CONFIRM_SHIPMENT),
@@ -77,7 +79,7 @@ export const ENV = {
 
 // API 服务器配置
 export const SERVER_CONFIG = {
-    PORT: 3001,
+    PORT: 3099,
     STATIC_DIR: 'public'
 }
 

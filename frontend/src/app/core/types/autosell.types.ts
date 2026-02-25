@@ -20,6 +20,7 @@ export interface AutoSellRule {
     enabled: boolean;
     itemId: string | null;
     accountId: string | null;
+    skuText: string | null;      // 规格筛选，如 "100次"、"200次"，null表示不限制规格
     deliveryType: DeliveryType;
     deliveryContent: string | null;
     apiConfig: ApiConfig | null;

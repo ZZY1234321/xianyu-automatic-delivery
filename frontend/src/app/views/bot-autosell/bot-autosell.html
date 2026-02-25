@@ -97,6 +97,39 @@
                             }
                         </div>
 
+                        <!-- 规格选择 -->
+                        @if (selectedGoods() && formData().accountId) {
+                        <div class="form-control">
+                            <label class="label py-1">
+                                <span class="label-text">规格筛选</span>
+                                @if (loadingSku()) {
+                                <span class="loading loading-spinner loading-xs"></span>
+                                }
+                            </label>
+                            <div class="dropdown w-full" [class.dropdown-open]="showSkuDropdown()">
+                                <div tabindex="0" role="button"
+                                    class="select select-bordered select-sm w-full flex items-center"
+                                    (click)="showSkuDropdown.set(!showSkuDropdown())">
+                                    {{ getSkuLabel(formData().skuText) }}
+                                </div>
+                                <ul tabindex="0" style="background:#FFFCF9;border:1px solid #D4C8BE" class="dropdown-content menu rounded-box z-50 w-full p-2 shadow-lg max-h-60 overflow-y-auto">
+                                    <li><a (click)="selectSku(null)" [class.active]="!formData().skuText">不限制规格</a></li>
+                                    @for (sku of goodsSkuOptions(); track sku.value) {
+                                    <li><a (click)="selectSku(sku.value)" [class.active]="formData().skuText === sku.value">
+                                        {{ sku.name }}
+                                        @if (sku.price) {
+                                        <span class="text-error ml-1">¥{{ sku.price }}</span>
+                                        }
+                                    </a></li>
+                                    }
+                                </ul>
+                            </div>
+                            <label class="label py-1">
+                                <span class="label-text-alt text-base-content/50">选择规格后，只有匹配该规格的订单才会触发此规则</span>
+                            </label>
+                        </div>
+                        }
+
                         <div class="form-control">
                             <label class="label py-1">
                                 <span class="label-text">发货类型</span>

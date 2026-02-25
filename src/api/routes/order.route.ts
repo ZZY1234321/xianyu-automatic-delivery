@@ -85,15 +85,26 @@ export function createOrderRoutes(getClientManager: () => ClientManager | null) 
 
         const client = clientManager.getClient(accountId)
         if (!client) {
-            return c.json({ error: '账号未连接' }, 400)
+            return c.json({ error: '账号未连接，请确保账号已启用并在线' }, 400)
+        }
+
+        // 先创建订单占位记录（如果不存在）
+        const existing = getOrder(orderId)
+        if (!existing) {
+            const { handleOrderMessage } = await import('../../services/order.service.js')
+            handleOrderMessage(accountId, orderId)
         }
 
         const detail = await fetchAndUpdateOrderDetail(client, orderId)
         if (!detail) {
-            return c.json({ error: '获取订单详情失败' }, 500)
+            return c.json({ error: '获取订单详情失败，请检查订单ID是否正确或账号权限是否正常' }, 500)
         }
 
         const order = getOrder(orderId)
+        if (!order) {
+            return c.json({ error: '订单获取成功但未找到订单记录' }, 500)
+        }
+
         return c.json({ success: true, order })
     })
 

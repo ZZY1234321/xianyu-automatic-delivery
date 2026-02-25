@@ -39,10 +39,7 @@
     font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
-    background: linear-gradient(135deg, #FF8A4C 0%, #FF6B35 50%, #E85D04 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: oklch(var(--bc));
     transition: opacity 0.2s ease, width 0.2s ease;
 }
 

@@ -87,9 +87,15 @@
                     {{ item.accountNickname }}
                 </div>
                 }
-                <div class="card-actions mt-2">
+                <div class="card-actions mt-2 gap-2">
+                    <button class="btn btn-sm btn-outline btn-secondary flex-1" 
+                        (click)="viewGoodsDetail(item)"
+                        [disabled]="!item.accountId">
+                        <lucide-icon [img]="icons.List" class="w-4 h-4"></lucide-icon>
+                        查看规格
+                    </button>
                     <a [href]="'https://www.goofish.com/item?id=' + item.id" target="_blank" rel="noopener noreferrer"
-                        class="btn btn-sm btn-outline btn-primary w-full">
+                        class="btn btn-sm btn-outline btn-primary flex-1">
                         <lucide-icon [img]="icons.ExternalLink" class="w-4 h-4"></lucide-icon>
                         浏览商品
                     </a>
@@ -97,6 +103,65 @@
             </div>
         </div>
         }
+    </div>
+    }
+
+    <!-- 商品详情模态框 -->
+    @if (showDetailModal()) {
+    <div class="modal modal-open">
+        <div class="modal-box max-w-2xl">
+            <h3 class="font-bold text-lg mb-4">商品规格详情</h3>
+            
+            @if (detailLoading()) {
+            <div class="flex justify-center py-8">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
+            } @else if (detailError()) {
+            <div class="alert alert-error">
+                <lucide-icon [img]="icons.AlertCircle" class="w-5 h-5"></lucide-icon>
+                <span>{{ detailError() }}</span>
+            </div>
+            } @else if (goodsDetail()) {
+            <div class="space-y-4">
+                <div class="flex gap-4">
+                    @if (goodsDetail()!.picUrl) {
+                    <img [src]="goodsDetail()!.picUrl" [alt]="goodsDetail()!.title" 
+                        class="w-24 h-24 object-cover rounded-lg" />
+                    }
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-base mb-2">{{ goodsDetail()!.title }}</h4>
+                        <p class="text-lg font-bold text-error">¥{{ goodsDetail()!.price }}</p>
+                    </div>
+                </div>
+
+                @if (goodsDetail()!.skuOptions && goodsDetail()!.skuOptions.length > 0) {
+                <div>
+                    <h5 class="font-semibold mb-2">可用规格：</h5>
+                    <div class="flex flex-wrap gap-2">
+                        @for (sku of goodsDetail()!.skuOptions; track sku.value) {
+                        <div class="badge badge-lg badge-outline">
+                            {{ sku.name }}
+                            @if (sku.price) {
+                            <span class="ml-1 text-error">¥{{ sku.price }}</span>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+                } @else {
+                <div class="alert alert-info">
+                    <lucide-icon [img]="icons.Info" class="w-5 h-5"></lucide-icon>
+                    <span>该商品暂无规格信息</span>
+                </div>
+                }
+            </div>
+            }
+
+            <div class="modal-action">
+                <button class="btn" (click)="closeDetailModal()">关闭</button>
+            </div>
+        </div>
+        <div class="modal-backdrop" (click)="closeDetailModal()"></div>
     </div>
     }
 </div>

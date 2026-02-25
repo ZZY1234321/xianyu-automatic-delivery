@@ -28,7 +28,15 @@ const ORDER_STATUS_MESSAGES = [
     '[未付款，买家关闭了订单]',
     '[记得及时确认收货]',
     '已发货',
-    '有蚂蚁森林能量可领'
+    '有蚂蚁森林能量可领',
+    // 更多可能的订单消息格式
+    '拍下',
+    '待付款',
+    '待发货',
+    '待收货',
+    '交易成功',
+    '订单',
+    '已付款'
 ]
 
 export function isSystemMessage(content: string): boolean {
@@ -132,9 +140,20 @@ export function extractChatMessage(message: any, myId: string): ChatMessage | nu
 
         // 从 reminderUrl 提取订单ID（备用方案）
         if (!orderId && msg10.reminderUrl) {
-            const urlMatch = msg10.reminderUrl.match(/orderId=(\d+)/)
+            const urlMatch = msg10.reminderUrl.match(/orderId=(\d{15,})|id=(\d{15,})|order_id=(\d{15,})/i)
             if (urlMatch) {
-                orderId = urlMatch[1]
+                orderId = urlMatch[1] || urlMatch[2] || urlMatch[3]
+            }
+        }
+        
+        // 从 reminderTitle 或 content 中提取订单ID（如果包含订单号）
+        if (!orderId && (msg10.reminderTitle || content)) {
+            const text = (msg10.reminderTitle || '') + ' ' + (content || '')
+            // 匹配15位以上的数字（订单ID通常是15-19位）
+            const orderIdMatch = text.match(/\b(\d{15,19})\b/)
+            if (orderIdMatch) {
+                orderId = orderIdMatch[1]
+                logger.debug(`[订单解析] 从文本中提取到订单ID: ${orderId}`)
             }
         }
 
@@ -219,8 +238,28 @@ export function extractChatMessage(message: any, myId: string): ChatMessage | nu
         }
 
         // 订单状态消息特殊日志
-        if (isOrderMessage && orderId) {
-            logger.info(`[${msgTime}] 订单状态消息 - 订单ID: ${orderId}, 状态: ${orderStatus || content}`)
+        if (isOrderMessage) {
+            if (orderId) {
+                logger.info(`[${msgTime}] 订单状态消息 - 订单ID: ${orderId}, 状态: ${orderStatus || content}, 会话ID: ${chatId}`)
+            } else {
+                logger.warn(`[${msgTime}] ⚠️ 订单状态消息但未提取到订单ID - 内容: "${content}", 会话ID: ${chatId}`)
+                // 尝试从消息原始数据中提取订单ID
+                try {
+                    const msg6 = msg1['6'] || msg1[6]
+                    if (msg6) {
+                        const msg6Str = JSON.stringify(msg6)
+                        logger.warn(`[订单解析] 消息结构: ${msg6Str.substring(0, 500)}`)
+                        // 尝试从整个消息结构中搜索订单ID
+                        const fullMsgStr = JSON.stringify(message)
+                        const orderIdMatches = fullMsgStr.match(/"(\d{15,19})"/g)
+                        if (orderIdMatches) {
+                            logger.warn(`[订单解析] 在消息中发现可能的订单ID: ${orderIdMatches.join(', ')}`)
+                        }
+                    }
+                } catch (e) {
+                    logger.error(`[订单解析] 解析消息结构异常: ${e}`)
+                }
+            }
         }
 
         return {

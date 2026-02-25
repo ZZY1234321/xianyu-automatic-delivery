@@ -236,6 +236,7 @@ function createAutoSellTables() {
 
   safeAddColumn('autosell_rules', 'workflow_id', 'INTEGER')
   safeAddColumn('autosell_rules', 'delay_seconds', 'INTEGER DEFAULT 0')
+  safeAddColumn('autosell_rules', 'sku_text', 'TEXT')  // 规格筛选，如 "100次"、"200次"
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS autosell_stock (

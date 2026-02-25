@@ -25,6 +25,7 @@ export interface AutoSellRule {
     enabled: boolean
     itemId: string | null
     accountId: string | null
+    skuText: string | null      // 规格筛选，如 "100次"、"200次"，null表示不限制规格
     deliveryType: DeliveryType
     deliveryContent: string | null
     apiConfig: ApiConfig | null
@@ -44,6 +45,7 @@ export interface DbAutoSellRule {
     enabled: number
     item_id: string | null
     account_id: string | null
+    sku_text: string | null
     delivery_type: DeliveryType
     delivery_content: string | null
     api_config: string | null
@@ -107,6 +109,7 @@ export interface CreateAutoSellRuleParams {
     enabled?: boolean
     itemId?: string | null
     accountId?: string | null
+    skuText?: string | null      // 规格筛选
     deliveryType: DeliveryType
     deliveryContent?: string | null
     apiConfig?: ApiConfig | null
@@ -121,6 +124,7 @@ export interface UpdateAutoSellRuleParams {
     enabled?: boolean
     itemId?: string | null
     accountId?: string | null
+    skuText?: string | null      // 规格筛选
     deliveryType?: DeliveryType
     deliveryContent?: string | null
     apiConfig?: ApiConfig | null

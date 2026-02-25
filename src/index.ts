@@ -29,11 +29,15 @@ async function main() {
         conversationStore.addIncoming(accountId, msg)
 
         // 处理订单状态消息
-        if (msg.isOrderMessage && msg.orderId) {
-            logger.info(`订单消息: orderId=${msg.orderId}`)
-            handleOrderMessage(accountId, msg.orderId, msg.chatId)
-            // 异步获取订单详情
-            fetchOrderDetailAsync(accountId, msg.orderId)
+        if (msg.isOrderMessage) {
+            if (msg.orderId) {
+                logger.info(`[订单消息] 账号=${accountId}, 订单ID=${msg.orderId}, 状态=${msg.orderStatus || msg.content}, 会话ID=${msg.chatId}`)
+                handleOrderMessage(accountId, msg.orderId, msg.chatId)
+                // 异步获取订单详情
+                fetchOrderDetailAsync(accountId, msg.orderId)
+            } else {
+                logger.warn(`[订单消息] 账号=${accountId}, 消息内容="${msg.content}", 但未提取到订单ID，可能格式异常`)
+            }
         }
 
         // 异步获取用户头像（不阻塞消息处理）
@@ -88,13 +92,20 @@ async function fetchUserAvatarAsync(accountId: string, chatId: string, userId: s
 // 异步获取订单详情
 async function fetchOrderDetailAsync(accountId: string, orderId: string) {
     try {
+        logger.info(`[订单详情] 开始获取订单详情: 订单ID=${orderId}, 账号=${accountId}`)
         const client = clientManager.getClient(accountId)
         if (!client) {
-            logger.warn(`获取订单详情失败: 账号 ${accountId} 客户端不存在`)
+            logger.warn(`[订单详情] 获取失败: 账号 ${accountId} 客户端不存在或未连接`)
             return
         }
-        await fetchAndUpdateOrderDetail(client, orderId)
+        
+        const detail = await fetchAndUpdateOrderDetail(client, orderId)
+        if (detail) {
+            logger.info(`[订单详情] 订单详情获取成功: ${orderId}`)
+        } else {
+            logger.warn(`[订单详情] 订单详情获取失败或为空: ${orderId}`)
+        }
     } catch (e) {
-        logger.debug(`获取订单详情失败: ${e}`)
+        logger.error(`[订单详情] 获取订单详情异常: ${orderId} - ${e}`)
     }
 }

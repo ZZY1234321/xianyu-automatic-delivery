@@ -236,11 +236,15 @@ export class GoofishOrdersComponent implements OnInit, OnDestroy {
             const res = await this.orderService.fetchOrder(accountId, orderId);
             if (res.success) {
                 this.manualOrderId.set('');
+                await this.dialog.alert('成功', '订单获取成功');
+                // 刷新订单列表
+                await this.loadOrders();
             } else {
                 await this.dialog.alert('获取订单失败', res.error || '获取订单失败');
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error('获取订单失败', e);
+            await this.dialog.alert('获取订单失败', e?.error?.error || '获取订单失败，请稍后重试');
         } finally {
             this.fetching.set(false);
         }

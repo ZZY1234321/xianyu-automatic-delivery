@@ -69,6 +69,11 @@ export class BotAutosellComponent implements OnInit {
     showTriggerDropdown = signal(false);
     showWorkflowDropdown = signal(false);
     showApiMethodDropdown = signal(false);
+    showSkuDropdown = signal(false);
+
+    // 商品规格选项
+    goodsSkuOptions = signal<{ name: string; value: string; price?: string }[]>([]);
+    loadingSku = signal(false);
 
     filteredGoods = computed(() => {
         const search = this.goodsSearch().toLowerCase();
@@ -98,6 +103,7 @@ export class BotAutosellComponent implements OnInit {
         enabled: true,
         itemId: null as string | null,
         accountId: null as string | null,
+        skuText: null as string | null,
         deliveryType: 'fixed' as DeliveryType,
         deliveryContent: '',
         triggerOn: 'paid' as TriggerOn,
@@ -171,7 +177,7 @@ export class BotAutosellComponent implements OnInit {
         }
     }
 
-    onEdit(rule: AutoSellRule) {
+    async onEdit(rule: AutoSellRule) {
         this.editingRule.set(rule);
         const apiConfig = rule.apiConfig;
         this.formData.set({
@@ -179,6 +185,7 @@ export class BotAutosellComponent implements OnInit {
             enabled: rule.enabled,
             itemId: rule.itemId,
             accountId: rule.accountId,
+            skuText: rule.skuText || null,
             deliveryType: rule.deliveryType,
             deliveryContent: rule.deliveryContent || '',
             triggerOn: rule.triggerOn,
@@ -193,6 +200,11 @@ export class BotAutosellComponent implements OnInit {
         });
         this.goodsSearch.set('');
         this.stockContent.set('');
+        
+        // 加载商品规格
+        if (rule.itemId && rule.accountId) {
+            await this.loadGoodsSkuOptions(rule.accountId, rule.itemId);
+        }
     }
 
     cancelEdit() {
@@ -206,6 +218,7 @@ export class BotAutosellComponent implements OnInit {
             enabled: true,
             itemId: null,
             accountId: null,
+            skuText: null,
             deliveryType: 'fixed',
             deliveryContent: '',
             triggerOn: 'paid',
@@ -220,6 +233,7 @@ export class BotAutosellComponent implements OnInit {
         });
         this.goodsSearch.set('');
         this.stockContent.set('');
+        this.goodsSkuOptions.set([]);
     }
 
     updateField<K extends keyof ReturnType<typeof this.formData>>(
@@ -233,14 +247,45 @@ export class BotAutosellComponent implements OnInit {
         }
     }
 
-    selectGoods(goods: GoodsItem) {
+    async selectGoods(goods: GoodsItem) {
         this.formData.update(f => ({
             ...f,
             itemId: goods.id,
-            accountId: goods.accountId || null
+            accountId: goods.accountId || null,
+            skuText: null  // 重置规格选择
         }));
         this.goodsSearch.set('');
         this.showGoodsDropdown.set(false);
+        
+        // 加载商品规格
+        if (goods.accountId) {
+            await this.loadGoodsSkuOptions(goods.accountId, goods.id);
+        }
+    }
+
+    async loadGoodsSkuOptions(accountId: string, itemId: string) {
+        this.loadingSku.set(true);
+        this.goodsSkuOptions.set([]);
+        try {
+            const res = await this.goodsService.getGoodsDetail(accountId, itemId);
+            if (res.success && res.detail.skuOptions && res.detail.skuOptions.length > 0) {
+                this.goodsSkuOptions.set(res.detail.skuOptions);
+            }
+        } catch (e) {
+            console.error('加载商品规格失败', e);
+        } finally {
+            this.loadingSku.set(false);
+        }
+    }
+
+    selectSku(skuText: string | null) {
+        this.updateField('skuText', skuText);
+        this.showSkuDropdown.set(false);
+    }
+
+    getSkuLabel(skuText: string | null): string {
+        if (!skuText) return '不限制规格';
+        return skuText;
     }
 
     clearGoodsSelection() {
@@ -326,6 +371,7 @@ export class BotAutosellComponent implements OnInit {
             enabled: data.enabled,
             itemId: data.itemId,
             accountId: data.accountId,
+            skuText: data.skuText || null,
             deliveryType: data.deliveryType,
             deliveryContent: data.deliveryType === 'fixed' ? data.deliveryContent : null,
             apiConfig,
@@ -487,5 +533,6 @@ export class BotAutosellComponent implements OnInit {
         this.showTriggerDropdown.set(false);
         this.showWorkflowDropdown.set(false);
         this.showApiMethodDropdown.set(false);
+        this.showSkuDropdown.set(false);
     }
 }

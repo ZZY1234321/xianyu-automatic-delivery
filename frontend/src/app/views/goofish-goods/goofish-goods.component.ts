@@ -2,7 +2,7 @@ import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@ang
 import { LucideAngularModule } from 'lucide-angular';
 import { ICONS } from '../../shared/icons';
 import { GoodsService, AccountService } from '../../core/services';
-import type { GoodsItem, Account } from '../../core/types';
+import type { GoodsItem, Account, GoodsDetail } from '../../core/types';
 
 @Component({
     selector: 'app-goofish-goods',
@@ -124,5 +124,43 @@ export class GoofishGoodsComponent implements OnInit {
         this.selectedStatus.set(value);
         localStorage.setItem(this.STORAGE_KEY_STATUS, value);
         this.showStatusDropdown.set(false);
+    }
+
+    // 商品详情相关
+    showDetailModal = signal(false);
+    detailLoading = signal(false);
+    goodsDetail = signal<GoodsDetail | null>(null);
+    detailError = signal('');
+
+    async viewGoodsDetail(item: GoodsItem) {
+        if (!item.accountId) {
+            this.detailError.set('商品缺少账号信息');
+            return;
+        }
+
+        this.showDetailModal.set(true);
+        this.detailLoading.set(true);
+        this.detailError.set('');
+        this.goodsDetail.set(null);
+
+        try {
+            const res = await this.goodsService.getGoodsDetail(item.accountId, item.id);
+            if (res.success && res.detail) {
+                this.goodsDetail.set(res.detail);
+            } else {
+                this.detailError.set('获取商品详情失败');
+            }
+        } catch (e: any) {
+            console.error('获取商品详情失败', e);
+            this.detailError.set(e?.error?.error || '获取商品详情失败');
+        } finally {
+            this.detailLoading.set(false);
+        }
+    }
+
+    closeDetailModal() {
+        this.showDetailModal.set(false);
+        this.goodsDetail.set(null);
+        this.detailError.set('');
     }
 }

@@ -166,12 +166,41 @@ export async function processAutoSell(
 
     // 获取匹配的规则
     const rules = getEnabledAutoSellRules(accountId, itemId)
-    const matchedRule = rules.find(r => r.triggerOn === triggerOn)
+    const skuText = (extraContext?.skuText || '').trim()
+    
+    logger.info(`[自动发货] 订单 ${orderId}, 商品ID=${itemId}, 规格="${skuText}", 触发时机=${triggerOn}, 候选规则数=${rules.length}`)
+    
+    // 匹配规则：触发时机匹配，且规格匹配（如果规则指定了规格）
+    const matchedRule = rules.find(r => {
+        if (r.triggerOn !== triggerOn) {
+            logger.debug(`[自动发货] 规则 "${r.name}" 触发时机不匹配: ${r.triggerOn} !== ${triggerOn}`)
+            return false
+        }
+        
+        // 如果规则指定了规格，则订单规格必须匹配
+        if (r.skuText) {
+            const ruleSkuText = r.skuText.trim()
+            const orderSkuText = skuText.trim()
+            
+            // 严格匹配
+            if (orderSkuText !== ruleSkuText) {
+                logger.debug(`[自动发货] 规则 "${r.name}" 规格不匹配: 规则规格="${ruleSkuText}" !== 订单规格="${orderSkuText}"`)
+                return false
+            }
+            logger.info(`[自动发货] 规则 "${r.name}" 规格匹配成功: "${ruleSkuText}"`)
+        } else {
+            logger.debug(`[自动发货] 规则 "${r.name}" 未指定规格，匹配所有规格`)
+        }
+        
+        return true
+    })
 
     if (!matchedRule) {
-        logger.debug(`订单 ${orderId} 无匹配的自动发货规则`)
+        logger.warn(`[自动发货] 订单 ${orderId} 无匹配的自动发货规则。候选规则: ${rules.map(r => `"${r.name}"(规格:${r.skuText || '不限'},触发:${r.triggerOn})`).join(', ')}`)
         return { success: false, error: '无匹配规则' }
     }
+    
+    logger.info(`[自动发货] 订单 ${orderId} 匹配到规则: "${matchedRule.name}" (ID: ${matchedRule.id})`)
 
     // 检查库存类型的库存是否充足
     if (matchedRule.deliveryType === 'stock') {
@@ -183,7 +212,7 @@ export async function processAutoSell(
     }
 
     // 构建上下文，支持更多变量
-    const skuText = extraContext?.skuText || ''
+    // skuText 已在上面声明，这里直接使用
     // 尝试从规格文本中提取数字（如 "100次" -> "100"）
     const skuNumberMatch = skuText.match(/(\d+)/)
     const skuNumber = skuNumberMatch ? skuNumberMatch[1] : ''

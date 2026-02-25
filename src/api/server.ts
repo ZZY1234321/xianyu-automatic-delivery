@@ -59,10 +59,14 @@ export function createApp() {
     // 安全中间件 - 限制 API 只能从前端请求（排除 WebSocket）
     app.use('/api/*', securityMiddleware)
 
-    // 认证中间件 - 保护 API 路由（排除认证路由）
+    // 认证中间件 - 保护 API 路由（排除认证路由和调试路由）
     app.use('/api/*', async (c, next) => {
         // 排除认证相关路由
         if (c.req.path.startsWith('/api/auth')) {
+            return next()
+        }
+        // 排除调试路由（方便开发调试）
+        if (c.req.path.includes('/debug/')) {
             return next()
         }
         return authMiddleware(c, next)

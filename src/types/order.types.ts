@@ -79,6 +79,7 @@ export interface OrderButton {
 // 订单列表查询参数
 export interface OrderListParams {
     accountId?: string
+    itemId?: string
     status?: number
     limit?: number
     offset?: number

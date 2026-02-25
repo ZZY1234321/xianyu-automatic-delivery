@@ -9,7 +9,7 @@ import type { OrderRecord, OrderListParams } from '../types/order.types.js'
 
 // 获取订单列表
 export function getOrders(params: OrderListParams = {}): OrderRecord[] {
-    const { accountId, status, limit = 50, offset = 0 } = params
+    const { accountId, itemId, status, limit = 50, offset = 0 } = params
 
     let sql = 'SELECT * FROM orders WHERE 1=1'
     const sqlParams: any[] = []
@@ -17,6 +17,11 @@ export function getOrders(params: OrderListParams = {}): OrderRecord[] {
     if (accountId) {
         sql += ' AND account_id = ?'
         sqlParams.push(accountId)
+    }
+
+    if (itemId) {
+        sql += ' AND item_id = ?'
+        sqlParams.push(itemId)
     }
 
     if (status !== undefined) {

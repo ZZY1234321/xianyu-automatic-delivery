@@ -3,6 +3,10 @@
 [![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://haiyewei.github.io/GoofishCredentialsBot)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
+> ## 📦 框架来源
+> 
+> 本项目基于 [AutoMangBoSow](https://github.com/CDYBY/AutoMangBoSow) 框架开发
+
 > ## ⚠️ 警告
 > **各个功能正在测试中，请勿上线正式环境！除非你能自己修复问题。**
 

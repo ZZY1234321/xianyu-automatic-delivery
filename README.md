@@ -1,6 +1,5 @@
-# GoofishCBot
+# 光风霁月 - 闲鱼智能助手
 
-[![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://haiyewei.github.io/GoofishCredentialsBot)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 > ## 📦 框架来源
@@ -45,8 +44,8 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/haiyewei/GoofishCredentialsBot.git
-cd GoofishCredentialsBot
+git clone git@github.com:ZZY1234321/xianyu-automatic-delivery.git
+cd xianyu-automatic-delivery
 
 # 安装依赖
 npm install
@@ -68,15 +67,7 @@ npm run pm2:stop
 npm run pm2:logs
 ```
 
-访问 `http://localhost:3000` 进入管理界面。
-
-## 📖 文档
-
-详细文档请访问：[https://haiyewei.github.io/GoofishCredentialsBot](https://haiyewei.github.io/GoofishCredentialsBot)
-
-- [快速开始](https://haiyewei.github.io/GoofishCredentialsBot/guide/getting-started)
-- [功能说明](https://haiyewei.github.io/GoofishCredentialsBot/guide/features)
-- [API 文档](https://haiyewei.github.io/GoofishCredentialsBot/api/)
+访问 `http://localhost:3099` 进入管理界面。
 
 ## 📁 项目结构
 
@@ -93,4 +84,8 @@ npm run pm2:logs
 
 ## 📄 License
 
-[GPL-3.0](LICENSE) © 2025 haiyewei
+[GPL-3.0](LICENSE) © 2025
+
+## 🙏 致谢
+
+感谢 [AutoMangBoSow](https://github.com/CDYBY/AutoMangBoSow) 项目提供的优秀框架基础。

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">光风霁月</string>
+    <string name="title_activity_main">光风霁月</string>
+    <string name="package_name">com.guangfengjiyue.xianyu</string>
+    <string name="custom_url_scheme">com.guangfengjiyue.xianyu</string>
+</resources>

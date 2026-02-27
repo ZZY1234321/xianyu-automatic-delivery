@@ -1,42 +1,14 @@
-# Dependencies
-node_modules/
-frontend/node_modules/
-
-# Build outputs
-dist/
-public/
-frontend/dist/
-docs/.vitepress/dist/
-docs/.vitepress/cache/
-
-# Keep docs public folder
-!docs/public/
-
-# Data
-data/
-logs/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Angular
-frontend/.angular/
-
-# Logs
-*.log
-npm-debug.log*
-
-# Reference projects
-.ReferenceProjects/
+# Android 相关（Capacitor）
+# 忽略构建产物和本地配置文件
+frontend/android/app/build/
+frontend/android/build/
+frontend/android/.gradle/
+frontend/android/local.properties
+frontend/android/.idea/
+frontend/android/*.iml
+frontend/android/.cxx/
+frontend/android/captures/
+*.apk
+*.aab
+*.keystore
+*.jks

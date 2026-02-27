@@ -79,7 +79,7 @@ npm run pm2:logs
 
 访问 `http://localhost:3099` 进入管理界面。
 
-### 移动端构建
+### 移动端构建（非必须）
 
 ```bash
 # 构建 Android APK

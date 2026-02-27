@@ -13,13 +13,14 @@
 
 ## ✨ 功能特性
 
-- 🤖 **AI 智能回复** - 集成 OpenAI 兼容 API，智能理解买家意图并自动回复
+- 🤖 **AI 智能回复** - 集成 OpenAI 兼容 API（原生支持 OpenClaw），智能理解买家意图并自动回复
 - 📦 **自动发货** - 虚拟商品自动发货，支持库存管理、API 取货
 - 💬 **会话管理** - 实时同步闲鱼消息，多账号会话管理，消息历史记录
 - 🛒 **订单管理** - 订单状态同步，一键发货，免拼发货支持
 - 👥 **多账号支持** - 多个闲鱼账号同时在线，独立配置，统一管理
 - 🔧 **可视化工作流** - 基于思维导图的发货流程编辑器，灵活配置业务逻辑
 - 📊 **系统监控** - 实时日志查看，账号状态监控
+- 📱 **移动端支持** - 支持 Android APK 打包，可在手机上直接使用
 
 ## 🛠️ 技术栈
 
@@ -27,6 +28,7 @@
 |------|------|
 | 后端 | Node.js + TypeScript + Hono + SQLite |
 | 前端 | Angular 21 + Tailwind CSS + DaisyUI |
+| 移动端 | Capacitor 6 + Android |
 | 工作流 | simple-mind-map |
 | 部署 | PM2 |
 
@@ -66,6 +68,19 @@ npm run pm2:logs
 
 访问 `http://localhost:3099` 进入管理界面。
 
+### 移动端构建
+
+```bash
+# 构建 Android APK
+cd frontend
+npm run build:mobile
+
+# 打开 Android Studio
+npm run cap:open:android
+```
+
+详细构建说明请参考 [ANDROID_BUILD.md](ANDROID_BUILD.md)
+
 ## 📁 项目结构
 
 ```
@@ -75,6 +90,8 @@ npm run pm2:logs
 │   ├── db/             # 数据库
 │   └── websocket/      # WebSocket 客户端
 ├── frontend/           # 前端源码 (Angular)
+│   ├── android/        # Android 项目 (Capacitor)
+│   └── src/            # Angular 源码
 ├── docs/               # VitePress 文档
 └── data/               # SQLite 数据库
 ```

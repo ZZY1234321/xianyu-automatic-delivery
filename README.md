@@ -24,13 +24,24 @@
 
 ## 🛠️ 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| 后端 | Node.js + TypeScript + Hono + SQLite |
-| 前端 | Angular 21 + Tailwind CSS + DaisyUI |
-| 移动端 | Capacitor 6 + Android |
-| 工作流 | simple-mind-map |
-| 部署 | PM2 |
+### 后端
+- **运行时**: Node.js
+- **语言**: TypeScript
+- **框架**: Hono
+- **数据库**: SQLite
+
+### 前端
+- **框架**: Angular 21
+- **样式**: Tailwind CSS + DaisyUI
+- **状态管理**: Angular Signals
+
+### 移动端
+- **框架**: Capacitor 6
+- **平台**: Android
+
+### 其他
+- **工作流引擎**: simple-mind-map
+- **进程管理**: PM2
 
 ## 🚀 快速开始
 

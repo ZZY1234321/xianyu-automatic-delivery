@@ -28,7 +28,9 @@ export const API_METHODS = {
     HAS_LOGIN: 'newlogin/hasLogin.do',
     ORDER_DETAIL: 'mtop.idle.web.trade.order.detail',
     CONFIRM_SHIPMENT: 'mtop.taobao.idle.logistic.consign.dummy',
-    FREE_SHIPPING: 'mtop.idle.groupon.activity.seller.freeshipping'
+    FREE_SHIPPING: 'mtop.idle.groupon.activity.seller.freeshipping',
+    ORDER_RATE: 'alibaba.idle.isv.rate.create',  // 订单评价API（根据淘宝开放平台文档）
+    RATE_LIST: 'mtop.idle.web.trade.rate.list'  // 评价列表API
 }
 
 // Passport API 配置
@@ -51,7 +53,9 @@ export const API_ENDPOINTS = {
     USER_HEAD: buildApiUrl(API_METHODS.USER_HEAD),
     ORDER_DETAIL: buildApiUrl(API_METHODS.ORDER_DETAIL),
     CONFIRM_SHIPMENT: buildApiUrl(API_METHODS.CONFIRM_SHIPMENT),
-    FREE_SHIPPING: buildApiUrl(API_METHODS.FREE_SHIPPING)
+    FREE_SHIPPING: buildApiUrl(API_METHODS.FREE_SHIPPING),
+    ORDER_RATE: buildApiUrl(API_METHODS.ORDER_RATE),
+    RATE_LIST: buildApiUrl(API_METHODS.RATE_LIST)
 }
 
 // WebSocket 请求头

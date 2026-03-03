@@ -11,7 +11,9 @@ import {
     deleteAutoReplyRule,
     toggleAutoReplyRule,
     getAISettings,
-    saveAISettings
+    saveAISettings,
+    getAutoRateSettings,
+    saveAutoRateSettings
 } from '../../db/index.js'
 import { testAIConnection } from '../../services/index.js'
 
@@ -69,6 +71,7 @@ export function createAutoReplyRoutes() {
     router.get('/ai/default-prompt', (c) => {
         return c.json({ prompt: getDefaultPrompt() })
     })
+
 
     // ========== 规则管理 ==========
 

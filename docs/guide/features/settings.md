@@ -2,8 +2,6 @@
 
 路由：`/setting`
 
-![系统设置](/screenshots/settings.png)
-
 系统配置页面。
 
 ## 主题设置
@@ -37,6 +35,7 @@
 
 - OpenAI 官方
 - Azure OpenAI
+- OpenClaw (已内置路径兼容)
 - 国内代理服务
 - 本地部署的 LLM（如 Ollama）
 

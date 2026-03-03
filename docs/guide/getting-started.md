@@ -9,13 +9,11 @@
 
 ```bash
 # 克隆项目
-git clone <repository-url>
-cd goofishcbot
+git clone git@github.com:ZZY1234321/xianyu-automatic-delivery.git
+cd xianyu-automatic-delivery
 
 # 安装依赖
 npm install
-
-# 安装前端依赖
 cd frontend && npm install && cd ..
 ```
 
@@ -41,7 +39,7 @@ npm run pm2:logs
 
 ## 访问
 
-启动后访问 `http://localhost:3000` 进入管理界面。
+启动后访问 `http://localhost:3099` 进入管理界面。
 
 ## 配置账号
 

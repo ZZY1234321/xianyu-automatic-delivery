@@ -11,6 +11,7 @@ GET /api/orders?accountId=xxx&status=2&limit=50&offset=0
 |------|------|------|
 | accountId | string | 可选，筛选账号 |
 | status | number | 可选，订单状态 |
+| isRated | number | 可选，是否已评价（0=未评价, 1=已评价） |
 | limit | number | 每页数量，默认 50 |
 | offset | number | 偏移量，默认 0 |
 

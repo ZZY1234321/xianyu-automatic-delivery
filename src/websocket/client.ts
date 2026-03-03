@@ -1,6 +1,6 @@
 import WebSocket from 'ws'
 
-import { WS_CONFIG, WS_HEADERS, API_ENDPOINTS } from '../core/constants.js'
+import { WS_CONFIG, WS_HEADERS, API_ENDPOINTS, API_METHODS } from '../core/constants.js'
 import { createLogger } from '../core/logger.js'
 import { CookiesManager } from '../core/cookies.manager.js'
 import { generateDeviceId, generateMid, generateSign } from '../utils/crypto.js'
@@ -10,6 +10,7 @@ import { updateAccountStatus } from '../db/index.js'
 import { sendMessage } from './message.sender.js'
 import { processWebSocketMessage } from './message.receiver.js'
 import type { MessageCallback } from '../types/index.js'
+import type { RateListParams, RateListApiResponse } from '../types/rate.types.js'
 
 const logger = createLogger('Ws:Client')
 
@@ -205,6 +206,7 @@ export class GoofishClient {
         }
     }
 
+
     // 免拼发货
     async freeShipping(orderId: string, itemId: string, buyerId: string): Promise<{ success: boolean; error?: string }> {
         try {
@@ -272,6 +274,80 @@ export class GoofishClient {
         }
     }
 
+    // 获取评价列表
+    async getRateList(params: RateListParams): Promise<RateListApiResponse | null> {
+        try {
+            const cookiesStr = CookiesManager.getCookies(this._accountId)
+            if (!cookiesStr) {
+                return null
+            }
+
+            const h5Token = CookiesManager.getH5Token(this._accountId)
+            if (!h5Token) {
+                logger.warn(`[${this._accountId}] h5Token 为空，无法获取评价列表`)
+                return null
+            }
+
+            const timestamp = Date.now().toString()
+            const dataVal = JSON.stringify({
+                rateType: params.rateType ?? 0, // 0=全部, 1=好评, -1=差评
+                ratedUid: params.ratedUid,
+                raterType: params.raterType ?? 0, // 0=全部, 6=来自买家, 7=来自卖家
+                rowsPerPage: params.rowsPerPage ?? 20,
+                pageNumber: params.pageNumber ?? 1,
+                foldFlag: params.foldFlag ?? 0,
+                fishAdCode: params.fishAdCode || "330110", // 示例值，可能需要动态获取或配置
+                extraTag: params.extraTag || ""
+            })
+            const sign = generateSign(timestamp, h5Token, dataVal)
+
+            const urlParams = new URLSearchParams({
+                jsv: '2.7.2',
+                appKey: WS_CONFIG.SIGN_APP_KEY,
+                t: timestamp,
+                sign,
+                v: '1.0',
+                type: 'originaljson',
+                accountSite: 'xianyu',
+                dataType: 'json',
+                timeout: '20000',
+                api: API_METHODS.RATE_LIST,
+                sessionOption: 'AutoLoginOnly'
+            })
+
+            logger.info(`[${this._accountId}] 获取评价列表请求 - pageNumber: ${params.pageNumber}, rowsPerPage: ${params.rowsPerPage}`)
+            logger.debug(`[${this._accountId}] 评价列表参数: ${JSON.stringify(params, null, 2)}`)
+
+            const res = await fetch(`${API_ENDPOINTS.RATE_LIST}?${urlParams}`, {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'content-type': 'application/x-www-form-urlencoded',
+                    'origin': 'https://www.goofish.com',
+                    'referer': 'https://www.goofish.com/',
+                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'cookie': cookiesStr
+                },
+                body: `data=${encodeURIComponent(dataVal)}`
+            })
+
+            CookiesManager.handleResponseCookies(this._accountId, res)
+            const resJson = await res.json()
+            logger.debug(`[${this._accountId}] 评价列表API完整响应: ${JSON.stringify(resJson, null, 2)}`)
+
+            if (resJson?.ret?.some((r: string) => r.includes('SUCCESS')) && resJson?.data) {
+                return resJson as RateListApiResponse
+            }
+
+            const errorMsg = resJson?.ret?.join(', ') || '未知错误'
+            logger.warn(`[${this._accountId}] 获取评价列表失败: ${errorMsg}`)
+            return null
+        } catch (e) {
+            logger.error(`[${this._accountId}] 获取评价列表异常: ${e}`)
+            return null
+        }
+    }
+
     private startHeartbeat() {
         this.heartbeatTimer = setInterval(() => {
             if (this.ws?.readyState === WebSocket.OPEN) {
@@ -290,9 +366,13 @@ export class GoofishClient {
                 const token = await this.tokenManager.refresh()
                 if (token) {
                     logger.info(`[${this._accountId}] Token刷新成功`)
-                    updateAccountStatus({ accountId: this._accountId, lastTokenRefresh: nowLocalString() })
+                    updateAccountStatus({ accountId: this._accountId, lastTokenRefresh: nowLocalString(), errorMessage: null })
                 } else {
-                    logger.warn(`[${this._accountId}] Token刷新失败`)
+                    logger.warn(`[${this._accountId}] Token刷新失败，可能需要更新 cookies`)
+                    updateAccountStatus({ 
+                        accountId: this._accountId, 
+                        errorMessage: 'Token刷新失败，请更新账号 cookies' 
+                    })
                 }
             }
         }, WS_CONFIG.TOKEN_REFRESH_INTERVAL * 1000)

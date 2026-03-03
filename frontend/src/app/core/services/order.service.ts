@@ -7,8 +7,8 @@ import type { Order, OrderListResponse } from '../types';
 export class OrderService {
     private http = inject(HttpService);
 
-    getOrders(accountId?: string, status?: number, limit = 50, offset = 0) {
-        return this.http.get<OrderListResponse>('/api/orders', { accountId, status, limit, offset });
+    getOrders(accountId?: string, status?: number, isRated?: number, limit = 50, offset = 0) {
+        return this.http.get<OrderListResponse>('/api/orders', { accountId, status, isRated, limit, offset });
     }
 
     getOrder(orderId: string) {
@@ -44,4 +44,15 @@ export class OrderService {
             `/api/orders/${orderId}`
         );
     }
+
+    // 评价功能已注释：抓包未找到合适的评价接口
+    /*
+    batchRateOrders(orderIds: string[], rateContent: string = '好评', rateScore: number = 5) {
+        return this.http.post<{
+            success: boolean;
+            results: Array<{ orderId: string; success: boolean; error?: string }>;
+            summary: { total: number; success: number; failed: number };
+        }>('/api/orders/batch-rate', { orderIds, rateContent, rateScore });
+    }
+    */
 }

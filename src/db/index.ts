@@ -66,7 +66,8 @@ export {
     getOrderById,
     upsertOrder,
     updateOrderStatus,
-    deleteOrder
+    deleteOrder,
+    markOrderAsRated
 } from './order.repository.js'
 
 export {
@@ -76,7 +77,10 @@ export {
     getSettings,
     getAISettings,
     saveAISettings,
-    AI_SETTINGS_KEYS
+    AI_SETTINGS_KEYS,
+    getAutoRateSettings,
+    saveAutoRateSettings,
+    AUTO_RATE_SETTINGS_KEYS
 } from './settings.repository.js'
 
 export {

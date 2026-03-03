@@ -9,7 +9,7 @@ import type { OrderRecord, OrderListParams } from '../types/order.types.js'
 
 // 获取订单列表
 export function getOrders(params: OrderListParams = {}): OrderRecord[] {
-    const { accountId, itemId, status, limit = 50, offset = 0 } = params
+    const { accountId, itemId, status, isRated, limit = 50, offset = 0 } = params
 
     let sql = 'SELECT * FROM orders WHERE 1=1'
     const sqlParams: any[] = []
@@ -29,6 +29,11 @@ export function getOrders(params: OrderListParams = {}): OrderRecord[] {
         sqlParams.push(status)
     }
 
+    if (isRated !== undefined) {
+        sql += ' AND is_rated = ?'
+        sqlParams.push(isRated)
+    }
+
     sql += ' ORDER BY updated_at DESC LIMIT ? OFFSET ?'
     sqlParams.push(limit, offset)
 
@@ -38,7 +43,7 @@ export function getOrders(params: OrderListParams = {}): OrderRecord[] {
 
 // 获取订单总数
 export function getOrderCount(params: OrderListParams = {}): number {
-    const { accountId, status } = params
+    const { accountId, status, isRated } = params
 
     let sql = 'SELECT COUNT(*) as count FROM orders WHERE 1=1'
     const sqlParams: any[] = []
@@ -51,6 +56,11 @@ export function getOrderCount(params: OrderListParams = {}): number {
     if (status !== undefined) {
         sql += ' AND status = ?'
         sqlParams.push(status)
+    }
+
+    if (isRated !== undefined) {
+        sql += ' AND is_rated = ?'
+        sqlParams.push(isRated)
     }
 
     const row = db.prepare(sql).get(...sqlParams) as { count: number }
@@ -149,6 +159,13 @@ export function deleteOrder(orderId: string): boolean {
     return result.changes > 0
 }
 
+// 标记订单为已评价
+export function markOrderAsRated(orderId: string): void {
+    const now = nowLocalString()
+    db.prepare('UPDATE orders SET is_rated = 1, updated_at = ? WHERE order_id = ?').run(now, orderId)
+    emitOrdersUpdated()
+}
+
 // 行数据映射
 function mapRowToOrder(row: any): OrderRecord {
     return {
@@ -169,6 +186,7 @@ function mapRowToOrder(row: any): OrderRecord {
         payTime: row.pay_time,
         shipTime: row.ship_time,
         completeTime: row.complete_time,
+        isRated: row.is_rated || 0,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
     }

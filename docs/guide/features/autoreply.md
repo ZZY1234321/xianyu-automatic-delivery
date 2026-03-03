@@ -2,8 +2,6 @@
 
 路由：`/autoreply`
 
-![自动回复](/screenshots/autoreply.png)
-
 配置自动回复规则。
 
 ## 功能

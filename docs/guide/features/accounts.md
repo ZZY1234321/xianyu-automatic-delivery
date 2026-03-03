@@ -2,8 +2,6 @@
 
 路由：`/accounts`
 
-![账号管理](/screenshots/accounts.png)
-
 管理闲鱼账号的核心页面。
 
 ## 功能

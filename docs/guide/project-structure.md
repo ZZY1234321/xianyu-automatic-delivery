@@ -1,7 +1,7 @@
 # 项目结构
 
 ```
-goofishcbot/
+AutoMangBoSow/
 ├── src/                      # 后端源码
 │   ├── api/                  # HTTP API
 │   │   ├── routes/           # 路由定义

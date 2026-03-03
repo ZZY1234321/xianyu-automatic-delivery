@@ -88,16 +88,13 @@
                 </div>
                 }
                 <div class="card-actions mt-2 gap-2">
-                    <button class="btn btn-sm btn-outline btn-secondary flex-1" 
-                        (click)="viewGoodsDetail(item)"
-                        [disabled]="!item.accountId">
-                        <lucide-icon [img]="icons.List" class="w-4 h-4"></lucide-icon>
+                    <button class="btn btn-sm btn-outline btn-primary flex-1" (click)="viewGoodsDetail(item)">
+                        <lucide-icon [img]="icons.Info" class="w-4 h-4"></lucide-icon>
                         查看规格
                     </button>
                     <a [href]="'https://www.goofish.com/item?id=' + item.id" target="_blank" rel="noopener noreferrer"
-                        class="btn btn-sm btn-outline btn-primary flex-1">
+                        class="btn btn-sm btn-outline btn-ghost">
                         <lucide-icon [img]="icons.ExternalLink" class="w-4 h-4"></lucide-icon>
-                        浏览商品
                     </a>
                 </div>
             </div>
@@ -111,7 +108,7 @@
     <div class="modal modal-open">
         <div class="modal-box max-w-2xl">
             <h3 class="font-bold text-lg mb-4">商品规格详情</h3>
-            
+
             @if (detailLoading()) {
             <div class="flex justify-center py-8">
                 <span class="loading loading-spinner loading-lg"></span>
@@ -122,38 +119,45 @@
                 <span>{{ detailError() }}</span>
             </div>
             } @else if (goodsDetail()) {
+            @let detail = goodsDetail()!;
             <div class="space-y-4">
                 <div class="flex gap-4">
-                    @if (goodsDetail()!.picUrl) {
-                    <img [src]="goodsDetail()!.picUrl" [alt]="goodsDetail()!.title" 
-                        class="w-24 h-24 object-cover rounded-lg" />
-                    }
+                    <img [src]="detail.picUrl" [alt]="detail.title" class="w-32 h-32 object-cover rounded-lg" />
                     <div class="flex-1">
-                        <h4 class="font-semibold text-base mb-2">{{ goodsDetail()!.title }}</h4>
-                        <p class="text-lg font-bold text-error">¥{{ goodsDetail()!.price }}</p>
+                        <h4 class="font-semibold text-lg mb-2">{{ detail.title }}</h4>
+                        <div class="text-2xl font-bold text-error">¥{{ detail.price }}</div>
+                        <div class="text-sm text-base-content/60 mt-1">商品ID: {{ detail.id }}</div>
                     </div>
                 </div>
 
-                @if (goodsDetail()!.skuOptions && goodsDetail()!.skuOptions.length > 0) {
+                <div class="divider"></div>
+
                 <div>
-                    <h5 class="font-semibold mb-2">可用规格：</h5>
-                    <div class="flex flex-wrap gap-2">
-                        @for (sku of goodsDetail()!.skuOptions; track sku.value) {
-                        <div class="badge badge-lg badge-outline">
-                            {{ sku.name }}
+                    <h5 class="font-semibold mb-3">商品规格</h5>
+                    @if (detail.skuOptions && detail.skuOptions.length > 0) {
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        @for (sku of detail.skuOptions; track sku.value) {
+                        <div class="badge badge-outline badge-lg p-3 justify-start">
+                            <span class="font-normal">
+                                @if (sku.name && sku.name !== sku.value) {
+                                {{ sku.name }}: {{ sku.value }}
+                                } @else {
+                                {{ sku.value }}
+                                }
+                            </span>
                             @if (sku.price) {
-                            <span class="ml-1 text-error">¥{{ sku.price }}</span>
+                            <span class="ml-2 text-error">¥{{ sku.price }}</span>
                             }
                         </div>
                         }
                     </div>
+                    } @else {
+                    <div class="alert alert-info">
+                        <lucide-icon [img]="icons.Info" class="w-5 h-5"></lucide-icon>
+                        <span>该商品暂无规格信息</span>
+                    </div>
+                    }
                 </div>
-                } @else {
-                <div class="alert alert-info">
-                    <lucide-icon [img]="icons.Info" class="w-5 h-5"></lucide-icon>
-                    <span>该商品暂无规格信息</span>
-                </div>
-                }
             </div>
             }
 

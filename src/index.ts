@@ -32,9 +32,9 @@ async function main() {
         if (msg.isOrderMessage) {
             if (msg.orderId) {
                 logger.info(`[订单消息] 账号=${accountId}, 订单ID=${msg.orderId}, 状态=${msg.orderStatus || msg.content}, 会话ID=${msg.chatId}`)
-                handleOrderMessage(accountId, msg.orderId, msg.chatId)
-                // 异步获取订单详情
-                fetchOrderDetailAsync(accountId, msg.orderId)
+            handleOrderMessage(accountId, msg.orderId, msg.chatId)
+            // 异步获取订单详情
+            fetchOrderDetailAsync(accountId, msg.orderId)
             } else {
                 logger.warn(`[订单消息] 账号=${accountId}, 消息内容="${msg.content}", 但未提取到订单ID，可能格式异常`)
             }

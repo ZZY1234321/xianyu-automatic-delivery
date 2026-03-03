@@ -10,7 +10,7 @@ export { AutoReplyService } from './autoreply.service';
 export { ThemeService, type ThemeMode } from './theme.service';
 export { OrderService } from './order.service';
 export { WSPushService, type OrdersUpdate, type AccountsUpdate } from './ws-push.service';
-export { SettingsService, type AISettings } from './settings.service';
+export { SettingsService, type AISettings, type AutoRateSettings } from './settings.service';
 export { AutoSellService } from './autosell.service';
 export { WorkflowService } from './workflow.service';
 export { AuthService } from './auth.service';

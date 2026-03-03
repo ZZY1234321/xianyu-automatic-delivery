@@ -154,7 +154,13 @@ export async function fetchGoodsList(
             }
         }
 
-        logger.warn(`[${accountId}] 获取商品列表失败: ${JSON.stringify(resJson?.ret)}`)
+        const errorMsg = resJson?.ret?.join(', ') || '未知错误'
+        logger.warn(`[${accountId}] 获取商品列表失败: ${errorMsg}`)
+        
+        // 检测 Token 过期错误
+        if (errorMsg.includes('TOKEN_EXOIRED') || errorMsg.includes('TOKEN') || errorMsg.includes('SESSION_EXPIRED')) {
+            logger.error(`[${accountId}] ⚠️ Token 已过期！系统会自动尝试刷新，但如果 cookies 已失效，请手动更新账号 cookies`)
+        }
         return { items: [], nextPage: false, totalCount: 0 }
     } catch (e) {
         logger.error(`[${accountId}] 获取商品列表异常: ${e}`)

@@ -5,10 +5,12 @@ import { LucideAngularModule } from 'lucide-angular';
 import { ICONS } from '../../shared/icons';
 import { DialogService } from '../../shared/dialog';
 import { ThemeService, SettingsService, type ThemeMode, type AISettings } from '../../core/services';
+import { ApiConfigComponent } from '../settings/api-config.component';
+// import type { AutoRateSettings } from '../../core/services'; // 评价功能已注释
 
 @Component({
     selector: 'app-system-setting',
-    imports: [LucideAngularModule, FormsModule],
+    imports: [LucideAngularModule, FormsModule, ApiConfigComponent],
     templateUrl: './system-setting.html',
     styleUrl: './system-setting.css',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -29,8 +31,24 @@ export class SystemSettingComponent implements OnInit {
     savingAI = signal(false);
     testingAI = signal(false);
 
+    // 评价功能已注释：抓包未找到合适的评价接口
+    /*
+    autoRateSettings = signal<AutoRateSettings>({
+        enabled: false,
+        rateContent: '好评',
+        rateScore: 5
+    });
+    savingAutoRate = signal(false);
+    */
+
     ngOnInit() {
         this.loadAISettings();
+        // this.loadAutoRateSettings(); // 评价功能已注释
+    }
+
+    // 检测是否在移动端（Capacitor）
+    isMobile(): boolean {
+        return typeof window !== 'undefined' && !!(window as any).Capacitor;
     }
 
     async loadAISettings() {
@@ -95,4 +113,5 @@ export class SystemSettingComponent implements OnInit {
             console.error('获取默认提示词失败', e);
         }
     }
+
 }

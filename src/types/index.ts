@@ -21,6 +21,7 @@ export * from './user.types.js'
 
 // 订单类型
 export * from './order.types.js'
+export * from './rate.types.js'
 
 // 自动发货类型
 export * from './autosell.types.js'

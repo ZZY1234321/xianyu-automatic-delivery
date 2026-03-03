@@ -55,6 +55,8 @@ export function createApp() {
 
     // 认证路由（不需要认证）
     app.route('/api/auth', createAuthRoutes())
+    // 添加 /auth 作为 /api/auth 的别名（兼容性）
+    app.route('/auth', createAuthRoutes())
 
     // 安全中间件 - 限制 API 只能从前端请求（排除 WebSocket）
     app.use('/api/*', securityMiddleware)
@@ -62,7 +64,7 @@ export function createApp() {
     // 认证中间件 - 保护 API 路由（排除认证路由和调试路由）
     app.use('/api/*', async (c, next) => {
         // 排除认证相关路由
-        if (c.req.path.startsWith('/api/auth')) {
+        if (c.req.path.startsWith('/api/auth') || c.req.path.startsWith('/auth')) {
             return next()
         }
         // 排除调试路由（方便开发调试）
@@ -70,6 +72,12 @@ export function createApp() {
             return next()
         }
         return authMiddleware(c, next)
+    })
+    
+    // 也保护 /auth 路由（除了认证相关路径）
+    app.use('/auth/*', async (c, next) => {
+        // /auth 路由本身不需要认证（已经在上面处理了）
+        return next()
     })
 
     // API 日志 - 只记录非 GET 请求，减少日志量
@@ -139,12 +147,15 @@ export function createApp() {
 
 function setupStaticFiles(app: Hono) {
     const staticDir = path.join(process.cwd(), SERVER_CONFIG.STATIC_DIR)
+    // 前端文件可能在 browser 子目录中
+    const browserDir = path.join(staticDir, 'browser')
+    const actualStaticDir = fs.existsSync(browserDir) ? browserDir : staticDir
 
-    if (fs.existsSync(staticDir)) {
-        app.use('/*', serveStatic({ root: `./${SERVER_CONFIG.STATIC_DIR}` }))
+    if (fs.existsSync(actualStaticDir)) {
+        app.use('/*', serveStatic({ root: actualStaticDir }))
 
         app.get('*', (c) => {
-            const indexPath = path.join(staticDir, 'index.html')
+            const indexPath = path.join(actualStaticDir, 'index.html')
             if (fs.existsSync(indexPath)) {
                 const html = fs.readFileSync(indexPath, 'utf-8')
                 return c.html(html)
@@ -152,9 +163,9 @@ function setupStaticFiles(app: Hono) {
             return c.text('Frontend not built', 404)
         })
 
-        logger.info(`静态文件服务已启用: ${staticDir}`)
+        logger.info(`静态文件服务已启用: ${actualStaticDir}`)
     } else {
-        logger.warn(`静态目录不存在: ${staticDir}，请先构建前端`)
+        logger.warn(`静态目录不存在: ${actualStaticDir}，请先构建前端`)
     }
 }
 

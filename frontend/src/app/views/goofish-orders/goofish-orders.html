@@ -34,7 +34,7 @@
                         </ul>
                     </div>
                 </div>
-                <button class="btn btn-sm btn-ghost" [disabled]="loading()" (click)="loadOrders()">
+                <button class="btn btn-sm btn-ghost" [disabled]="loading()" (click)="refreshOrders()">
                     <lucide-icon [img]="icons.RefreshCw" class="w-4 h-4" [class.animate-spin]="loading()"></lucide-icon>
                     刷新
                 </button>
@@ -103,6 +103,11 @@
             <table class="table table-sm">
                 <thead>
                     <tr>
+                        <th>
+                            <input type="checkbox" class="checkbox checkbox-sm" 
+                                [checked]="isAllSelected()"
+                                (change)="toggleSelectAll()" />
+                        </th>
                         <th>商品</th>
                         <th>订单号</th>
                         <th>买家</th>
@@ -114,7 +119,12 @@
                 </thead>
                 <tbody>
                     @for (order of orders(); track order.orderId) {
-                    <tr class="hover">
+                    <tr class="hover" [class.bg-base-200]="isOrderSelected(order.orderId)">
+                        <td>
+                            <input type="checkbox" class="checkbox checkbox-sm" 
+                                [checked]="isOrderSelected(order.orderId)"
+                                (change)="toggleOrderSelection(order.orderId)" />
+                        </td>
                         <td>
                             <div class="flex items-center gap-3">
                                 @if (order.itemPicUrl) {
@@ -201,9 +211,12 @@
     <!-- 移动端卡片 -->
     <div class="lg:hidden space-y-3">
         @for (order of orders(); track order.orderId) {
-        <div class="card bg-base-100 shadow-sm">
+        <div class="card bg-base-100 shadow-sm" [class.bg-base-200]="isOrderSelected(order.orderId)">
             <div class="card-body p-4">
                 <div class="flex gap-3">
+                    <input type="checkbox" class="checkbox checkbox-sm mt-1" 
+                        [checked]="isOrderSelected(order.orderId)"
+                        (change)="toggleOrderSelection(order.orderId)" />
                     @if (order.itemPicUrl) {
                     <img [src]="order.itemPicUrl" [alt]="order.itemTitle" class="w-16 h-16 object-cover rounded-lg">
                     } @else {

@@ -1,4 +1,9 @@
 <div class="page-container">
+    <!-- 移动端服务器配置（仅在 Capacitor 环境中显示） -->
+    @if (isMobile()) {
+    <app-api-config />
+    }
+
     <div class="card bg-base-100 shadow-sm">
         <div class="card-body">
             <h2 class="card-title">系统设置</h2>
@@ -44,10 +49,10 @@
                         <span class="label-text">API Base URL</span>
                     </label>
                     <input type="text" class="input input-bordered input-sm w-full"
-                        placeholder="https://api.openai.com/v1（留空使用默认）" [ngModel]="aiSettings().baseUrl"
+                        placeholder="https://api.openai.com/v1 或 OpenClaw地址" [ngModel]="aiSettings().baseUrl"
                         (ngModelChange)="updateAIField('baseUrl', $event)" />
                     <label class="label py-1">
-                        <span class="label-text-alt text-base-content/50">支持 OpenAI 兼容的第三方服务</span>
+                        <span class="label-text-alt text-base-content/50">支持 OpenAI 兼容的第三方服务及 OpenClaw</span>
                     </label>
                 </div>
 
@@ -112,4 +117,72 @@
             </div>
         </div>
     </div>
-</div>
+
+    <!-- 自动评价设置已注释：抓包未找到合适的评价接口 -->
+    <!--
+    <div class="card bg-base-100 shadow-sm mt-4">
+        <div class="card-body">
+            <div class="flex items-center gap-2">
+                <lucide-icon [img]="icons.Star" class="w-5 h-5 text-warning"></lucide-icon>
+                <h3 class="card-title text-lg">自动评价设置</h3>
+            </div>
+            <p class="text-sm text-base-content/60 mt-1">订单交易成功后自动提交评价</p>
+
+            <div class="form-control mt-4">
+                <label class="label cursor-pointer justify-start gap-3">
+                    <input type="checkbox" class="toggle toggle-primary" [checked]="autoRateSettings().enabled"
+                        (change)="updateAutoRateField('enabled', $any($event.target).checked)" />
+                    <span class="label-text">启用自动评价</span>
+                </label>
+                <label class="label py-1">
+                    <span class="label-text-alt text-base-content/50">订单交易成功后自动提交评价</span>
+                </label>
+            </div>
+
+            @if (autoRateSettings().enabled) {
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div class="form-control">
+                    <label class="label py-1">
+                        <span class="label-text">评价内容</span>
+                    </label>
+                    <input type="text" class="input input-bordered input-sm w-full" placeholder="好评"
+                        [ngModel]="autoRateSettings().rateContent"
+                        (ngModelChange)="updateAutoRateField('rateContent', $event)" />
+                    <label class="label py-1">
+                        <span class="label-text-alt text-base-content/50">评价文本内容</span>
+                    </label>
+                </div>
+
+                <div class="form-control">
+                    <label class="label py-1">
+                        <span class="label-text">评价分数</span>
+                    </label>
+                    <select class="select select-bordered select-sm w-full"
+                        [ngModel]="autoRateSettings().rateScore"
+                        (ngModelChange)="updateAutoRateScore($event)">
+                        <option [value]="5">5分 - 好评</option>
+                        <option [value]="4">4分 - 中评</option>
+                        <option [value]="3">3分 - 中评</option>
+                        <option [value]="2">2分 - 差评</option>
+                        <option [value]="1">1分 - 差评</option>
+                    </select>
+                    <label class="label py-1">
+                        <span class="label-text-alt text-base-content/50">评价分数（1-5分）</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mt-4">
+                <button class="btn btn-primary btn-sm" [disabled]="savingAutoRate()" (click)="saveAutoRateSettings()">
+                    @if (savingAutoRate()) {
+                    <span class="loading loading-spinner loading-xs"></span>
+                    } @else {
+                    <lucide-icon [img]="icons.Save" class="w-4 h-4"></lucide-icon>
+                    }
+                    保存设置
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+    -->

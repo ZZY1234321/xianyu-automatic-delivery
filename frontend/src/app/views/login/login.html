@@ -1,8 +1,8 @@
 <div class="login-container">
     <div class="login-card">
         <div class="login-header">
-            <h1 class="login-title">光风霁月</h1>
-            <p class="login-subtitle">闲鱼智能助手</p>
+            <h1 class="login-title">闲鱼智能助手</h1>
+            <p class="login-subtitle">xianyu-automatic-delivery</p>
         </div>
 
         <form (ngSubmit)="onSubmit()" class="login-form">
@@ -49,6 +49,43 @@
                 }
                 登录
             </button>
+            
+            @if (isMobile()) {
+            <div class="mt-4 pt-4 border-t border-base-300">
+                <button type="button" class="btn btn-ghost btn-sm w-full" (click)="toggleApiConfig()">
+                    <lucide-icon [img]="icons.Settings" class="w-4 h-4"></lucide-icon>
+                    服务器配置
+                    @if (showApiConfig()) {
+                    <lucide-icon [img]="icons.ChevronRight" class="w-4 h-4 rotate-90"></lucide-icon>
+                    } @else {
+                    <lucide-icon [img]="icons.ChevronRight" class="w-4 h-4"></lucide-icon>
+                    }
+                </button>
+                @if (showApiConfig()) {
+                <div class="mt-3 space-y-2">
+                    <div class="text-xs text-base-content/60">
+                        当前地址: <span class="font-mono">{{ getCurrentApiBase() }}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" class="input input-bordered input-sm flex-1" 
+                            placeholder="http://192.168.1.100:3099"
+                            [ngModel]="apiBase()"
+                            (ngModelChange)="apiBase.set($event)"
+                            (keyup.enter)="saveApiConfig()">
+                        <button type="button" class="btn btn-primary btn-sm" (click)="saveApiConfig()">
+                            <lucide-icon [img]="icons.Save" class="w-4 h-4"></lucide-icon>
+                            保存
+                        </button>
+                    </div>
+                    <div class="text-xs text-base-content/50 space-y-1">
+                        <div>💡 <strong>真实手机</strong>（同一 Wi-Fi）: http://你的电脑IP:3099</div>
+                        <div>💡 <strong>Android 模拟器</strong>: http://10.0.2.2:3099</div>
+                        <div class="text-warning mt-1">⚠️ 不能使用 localhost 或 127.0.0.1</div>
+                    </div>
+                </div>
+                }
+            </div>
+            }
         </form>
     </div>
 </div>

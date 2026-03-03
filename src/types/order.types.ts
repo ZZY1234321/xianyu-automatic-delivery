@@ -40,6 +40,7 @@ export interface OrderRecord {
     payTime: string | null
     shipTime: string | null
     completeTime: string | null
+    isRated: number          // 是否已评价 0=未评价 1=已评价
     createdAt: string
     updatedAt: string
 }
@@ -81,6 +82,7 @@ export interface OrderListParams {
     accountId?: string
     itemId?: string
     status?: number
+    isRated?: number  // 0=未评价, 1=已评价, undefined=全部
     limit?: number
     offset?: number
 }

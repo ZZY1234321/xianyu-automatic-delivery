@@ -2,8 +2,6 @@
 
 路由：`/conversations`
 
-![会话管理](/screenshots/conversations.png)
-
 实时消息和对话历史管理。
 
 ## 功能

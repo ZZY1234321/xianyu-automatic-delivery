@@ -1,10 +1,10 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: "GoofishCBot",
-  description: "闲鱼卡密机器人 - 自动回复、自动发货、订单管理",
+  title: "闲鱼智能助手",
+  description: "xianyu-automatic-delivery - 自动回复、自动发货、订单管理、多账号支持",
   lang: 'zh-CN',
-  base: '/GoofishCredentialsBot/',
+  base: '/xianyu-automatic-delivery/',
   themeConfig: {
     nav: [
       { text: '首页', link: '/' },
@@ -60,16 +60,16 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/haiyewei/GoofishCredentialsBot' }
+      { icon: 'github', link: 'https://github.com/ZZY1234321/xianyu-automatic-delivery' }
     ],
 
     footer: {
       message: 'Released under the GPL-3.0 License.',
-      copyright: 'Copyright © 2025 haiyewei'
+      copyright: 'Copyright © 2025'
     },
 
     editLink: {
-      pattern: 'https://github.com/haiyewei/GoofishCredentialsBot/edit/main/docs/:path',
+      pattern: 'https://github.com/ZZY1234321/xianyu-automatic-delivery/edit/main/docs/:path',
       text: '在 GitHub 上编辑此页'
     },
 

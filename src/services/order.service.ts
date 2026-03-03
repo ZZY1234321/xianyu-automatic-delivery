@@ -10,7 +10,8 @@ import {
     getOrderById,
     upsertOrder,
     updateOrderStatus,
-    getEnabledAutoSellRules
+    getEnabledAutoSellRules,
+    getAutoRateSettings
 } from '../db/index.js'
 import { OrderStatus, ORDER_STATUS_TEXT } from '../types/order.types.js'
 import { startWorkflowExecution } from './workflow.service.js'
@@ -207,7 +208,7 @@ export async function fetchAndUpdateOrderDetail(
             logger.info(`[订单状态变更] 订单 ${orderId} 变为待收货状态，触发自动发货`)
             await triggerAutoSell(client, orderId, itemIdStr, buyerUserIdStr, 'confirmed')
         } else {
-            logger.debug(`[订单状态] 订单 ${orderId} 状态未变更或不需要触发自动发货: status=${status}, statusText=${statusText}, oldStatus=${oldStatus}`)
+            logger.debug(`[订单状态] 订单 ${orderId} 状态未变更或不需要触发自动操作: status=${status}, statusText=${statusText}, oldStatus=${oldStatus}`)
         }
 
         return data
@@ -293,3 +294,4 @@ async function triggerAutoSell(
         logger.error(`[触发自动发货] 异常: ${orderId} - ${e}`)
     }
 }
+

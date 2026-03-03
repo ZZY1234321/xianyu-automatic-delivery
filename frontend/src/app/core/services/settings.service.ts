@@ -8,6 +8,12 @@ export interface AISettings {
     systemPrompt: string;
 }
 
+export interface AutoRateSettings {
+    enabled: boolean;
+    rateContent: string;
+    rateScore: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
     private readonly baseUrl = '/api/autoreply';
@@ -35,5 +41,19 @@ export class SettingsService {
         const res = await fetch(`${this.baseUrl}/ai/default-prompt`);
         const data = await res.json();
         return data.prompt;
+    }
+
+    async getAutoRateSettings(): Promise<AutoRateSettings> {
+        const res = await fetch(`${this.baseUrl}/auto-rate`);
+        return res.json();
+    }
+
+    async saveAutoRateSettings(settings: Partial<AutoRateSettings>): Promise<{ success: boolean }> {
+        const res = await fetch(`${this.baseUrl}/auto-rate`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(settings)
+        });
+        return res.json();
     }
 }

@@ -1,4 +1,4 @@
-# 光风霁月 - 闲鱼智能助手
+# 闲鱼智能助手
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -9,7 +9,9 @@
 > ## 📜 免责声明
 > **本项目仅供学习交流使用，禁止用于任何商业或非法用途。使用本项目所产生的一切后果由使用者自行承担，与项目作者无关。**
 
-闲鱼卡密机器人 - 自动回复、自动发货、订单管理、多账号支持
+## 📖 简介
+
+闲鱼智能助手是一个功能完善的闲鱼自动化管理工具，支持自动回复、自动发货、订单管理、多账号管理等核心功能。支持 Web 端和 Android 移动端两种使用方式。
 
 ## ✨ 功能特性
 
@@ -50,7 +52,7 @@
 - Node.js >= 18
 - npm >= 9
 
-### 安装
+### 安装与运行
 
 ```bash
 # 克隆项目
@@ -60,51 +62,75 @@ cd xianyu-automatic-delivery
 # 安装依赖
 npm install
 cd frontend && npm install && cd ..
-```
 
-### 运行
-
-```bash
-# 开发模式
+# 开发模式运行
 npm run dev
-
-# 生产部署
-npm run server
-
-# PM2 部署
-npm run pm2:start
-npm run pm2:stop
-npm run pm2:logs
 ```
 
 访问 `http://localhost:3099` 进入管理界面。
 
-### 移动端构建（非必须）
+## 📦 生产部署
+
+### 电脑端（Web）
 
 ```bash
-# 构建 Android APK
+# 构建前端
 cd frontend
-npm run build:mobile
+npm run build:web
 
-# 打开 Android Studio
-npm run cap:open:android
+# 启动服务
+cd ..
+npm start
 ```
 
-详细构建说明请参考 [ANDROID_BUILD.md](ANDROID_BUILD.md)
+### 手机端（Android APK）
+
+1. **前置要求**：安装 [Android Studio](https://developer.android.com/studio)
+
+2. **构建并打包**：
+   ```bash
+   ./build-android.sh
+   # 然后在 Android Studio 中构建 APK
+   ```
+
+3. **配置服务器**：安装 APK 后，在应用的"系统设置"中配置后端服务器地址
+
+## ❓ 常见问题
+
+**Q: 电脑端和手机端可以同时使用吗？**  
+A: 可以！两者完全独立，可以同时运行。
+
+**Q: 数据是共享的吗？**  
+A: 是的，两者连接同一个后端服务器，数据完全共享。
+
+**Q: 手机端需要重新编译才能更新吗？**  
+A: 是的，需要重新打包 APK。但功能更新只需要重新构建和打包即可。
+
+**Q: 可以只更新电脑端或只更新手机端吗？**  
+A: 可以！两者完全独立构建，互不影响。
 
 ## 📁 项目结构
 
 ```
-├── src/                # 后端源码
-│   ├── api/            # HTTP API
-│   ├── services/       # 业务服务
-│   ├── db/             # 数据库
-│   └── websocket/      # WebSocket 客户端
-├── frontend/           # 前端源码 (Angular)
-│   ├── android/        # Android 项目 (Capacitor)
-│   └── src/            # Angular 源码
-├── docs/               # VitePress 文档
-└── data/               # SQLite 数据库
+AutoMangBoSow/
+├── frontend/                    # 前端项目
+│   ├── src/                     # 源代码（电脑端和手机端共用）
+│   ├── android/                 # Android 项目（Capacitor 生成）
+│   ├── dist/                    # 构建输出
+│   │   └── frontend/
+│   │       └── browser/         # Web 构建输出
+│   ├── capacitor.config.ts      # Capacitor 配置
+│   └── package.json
+├── src/                         # 后端代码
+│   ├── api/                     # HTTP API 路由
+│   ├── services/                # 业务服务层
+│   ├── db/                      # 数据库操作
+│   └── websocket/               # WebSocket 客户端
+├── public/                      # 静态文件
+├── docs/                        # VitePress 文档
+├── data/                        # SQLite 数据库文件
+├── build-android.sh             # Android 构建脚本
+└── package.json
 ```
 
 ## 📄 License

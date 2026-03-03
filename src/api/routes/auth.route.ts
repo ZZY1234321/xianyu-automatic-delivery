@@ -37,6 +37,14 @@ function deleteToken(token: string): void {
 export function createAuthRoutes() {
     const router = new Hono()
 
+    // 根路径：返回 API 信息（用于调试）
+    router.get('/', (c) => {
+        return c.json({ 
+            message: 'Auth API',
+            endpoints: ['/login (POST)', '/check (GET)', '/logout (POST)']
+        })
+    })
+
     // 登录
     router.post('/login', async (c) => {
         const body = await c.req.json()

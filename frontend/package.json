@@ -6,8 +6,15 @@
     "dev": "ng serve",
     "start": "ng serve",
     "build": "ng build",
+    "build:web": "ng build --configuration production",
+    "build:mobile": "ng build --configuration production && npx cap sync",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "cap:add": "npx cap add",
+    "cap:sync": "npx cap sync",
+    "cap:open": "npx cap open",
+    "cap:android": "npx cap open android",
+    "cap:ios": "npx cap open ios"
   },
   "prettier": {
     "printWidth": 100,
@@ -37,7 +44,12 @@
     "rxjs": "~7.8.0",
     "simple-mind-map": "^0.14.0-fix.1",
     "tailwindcss": "^4.1.18",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/app": "^6.0.0",
+    "@capacitor/network": "^6.0.0"
   },
   "devDependencies": {
     "@angular/build": "^21.0.3",

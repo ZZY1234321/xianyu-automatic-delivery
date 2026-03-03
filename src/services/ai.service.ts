@@ -21,7 +21,16 @@ function getClient(): OpenAI | null {
         return null
     }
 
-    const settingsKey = `${settings.baseUrl}|${settings.apiKey}`
+    // --- 添加 OpenClaw 兼容逻辑 ---
+    let baseUrl = settings.baseUrl || undefined;
+    
+    // 如果是第三方代理（如 OpenClaw），确保路径以 /v1 结尾
+    if (baseUrl && !baseUrl.includes('openai.com') && !baseUrl.endsWith('/v1')) {
+        baseUrl = baseUrl.endsWith('/') ? `${baseUrl}v1` : `${baseUrl}/v1`;
+    }
+    // ------------------------------------
+
+    const settingsKey = `${baseUrl}|${settings.apiKey}`
 
     if (openaiClient && lastSettings === settingsKey) {
         return openaiClient
@@ -29,7 +38,7 @@ function getClient(): OpenAI | null {
 
     openaiClient = new OpenAI({
         apiKey: settings.apiKey,
-        baseURL: settings.baseUrl || undefined
+        baseURL: baseUrl
     })
     lastSettings = settingsKey
 

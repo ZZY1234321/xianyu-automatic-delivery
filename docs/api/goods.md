@@ -46,3 +46,35 @@ GET /api/goods/account/:id?page=1
   "totalCount": 50
 }
 ```
+
+## 获取商品详情
+
+```http
+GET /api/goods/detail?itemId=xxx&accountId=xxx
+```
+
+**参数**:
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| itemId | string | 商品ID或商品链接 |
+| accountId | string | 账号ID |
+
+**响应**:
+```json
+{
+  "id": "商品ID",
+  "title": "商品标题",
+  "price": "99.00",
+  "picUrl": "图片URL",
+  "accountId": "账号ID",
+  "skuOptions": [
+    {
+      "name": "规格名称",
+      "value": "规格值",
+      "price": "99.00"
+    }
+  ]
+}
+```
+
+商品规格信息从商品详情 API 实时获取。

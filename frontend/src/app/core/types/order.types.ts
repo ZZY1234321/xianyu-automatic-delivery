@@ -44,6 +44,7 @@ export interface Order {
     payTime: string | null
     shipTime: string | null
     completeTime: string | null
+    isRated: number          // 是否已评价 0=未评价 1=已评价
     createdAt: string
     updatedAt: string
 }

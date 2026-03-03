@@ -1,10 +1,10 @@
 # API 概述
 
-闲鱼卡密机器人后端基于 Hono 框架提供 RESTful API。
+闲鱼智能助手后端基于 Hono 框架提供 RESTful API。
 
 ## 基础信息
 
-- **Base URL**: `http://localhost:3000/api`
+- **Base URL**: `http://localhost:3099/api`
 - **Content-Type**: `application/json`
 
 ## API 模块

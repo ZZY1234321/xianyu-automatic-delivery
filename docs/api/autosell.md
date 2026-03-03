@@ -36,11 +36,26 @@ GET /api/autosell/:id
 POST /api/autosell
 ```
 
+**请求体**:
+```json
+{
+  "name": "规则名称",
+  "itemId": "商品ID",
+  "skuText": "规格值（可选，不限制规格时留空）",
+  "deliveryType": "text|stock|api",
+  "deliveryContent": "发货内容",
+  "triggerOn": "待发货|待收货",
+  "enabled": true
+}
+```
+
 ### 更新规则
 
 ```http
 PUT /api/autosell/:id
 ```
+
+**请求体**: 同创建规则
 
 ### 删除规则
 

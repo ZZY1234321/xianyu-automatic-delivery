@@ -195,6 +195,9 @@ function createOrderTables() {
   // 添加 sku_text 列（如果不存在）- 存储规格信息
   safeAddColumn('orders', 'sku_text', 'TEXT')
 
+  // 添加 is_rated 列（如果不存在）- 标记是否已评价
+  safeAddColumn('orders', 'is_rated', 'INTEGER DEFAULT 0')
+
   // 创建索引
   db.exec(`CREATE INDEX IF NOT EXISTS idx_orders_account 
     ON orders(account_id)`)

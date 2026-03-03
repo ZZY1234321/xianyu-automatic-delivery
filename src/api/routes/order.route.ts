@@ -5,7 +5,7 @@
 import { Hono } from 'hono'
 
 import { getOrderList, getOrder, fetchAndUpdateOrderDetail } from '../../services/order.service.js'
-import { updateOrderStatus, deleteOrder } from '../../db/order.repository.js'
+import { updateOrderStatus, deleteOrder, markOrderAsRated } from '../../db/order.repository.js'
 import { OrderStatus, ORDER_STATUS_TEXT } from '../../types/order.types.js'
 import type { ClientManager } from '../../websocket/client.manager.js'
 
@@ -16,17 +16,56 @@ export function createOrderRoutes(getClientManager: () => ClientManager | null) 
     app.get('/', async (c) => {
         const accountId = c.req.query('accountId')
         const status = c.req.query('status')
+        const isRated = c.req.query('isRated')
         const limit = parseInt(c.req.query('limit') || '50')
         const offset = parseInt(c.req.query('offset') || '0')
 
         const result = getOrderList({
             accountId: accountId || undefined,
             status: status ? parseInt(status) : undefined,
+            isRated: isRated ? parseInt(isRated) : undefined,
             limit,
             offset
         })
 
         return c.json(result)
+    })
+
+    // 获取评价列表（必须在 /:orderId 之前定义，避免路由冲突）
+    app.get('/rates', async (c) => {
+        const accountId = c.req.query('accountId')
+        const rateType = c.req.query('rateType') ? parseInt(c.req.query('rateType')!) : undefined
+        const raterType = c.req.query('raterType') ? parseInt(c.req.query('raterType')!) : undefined
+        const pageNumber = c.req.query('pageNumber') ? parseInt(c.req.query('pageNumber')!) : 1
+        const rowsPerPage = c.req.query('rowsPerPage') ? parseInt(c.req.query('rowsPerPage')!) : 20
+
+        if (!accountId) {
+            return c.json({ error: '缺少 accountId 参数' }, 400)
+        }
+
+        const clientManager = getClientManager()
+        if (!clientManager) {
+            return c.json({ error: 'ClientManager 未初始化' }, 500)
+        }
+
+        const client = clientManager.getClient(accountId)
+        if (!client) {
+            return c.json({ error: '账号未连接' }, 400)
+        }
+
+        const result = await client.getRateList({
+            rateType,
+            ratedUid: accountId,
+            raterType,
+            pageNumber,
+            rowsPerPage
+        })
+
+        if (!result) {
+            return c.json({ error: '获取评价列表失败' }, 500)
+        }
+
+        return c.json({ success: true, data: result.data })
     })
 
     // 获取单个订单
@@ -194,6 +233,7 @@ export function createOrderRoutes(getClientManager: () => ClientManager | null) 
 
         return c.json({ success: false, error: '删除失败' }, 500)
     })
+
 
     return app
 }

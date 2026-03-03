@@ -49,6 +49,9 @@ export class GoofishOrdersComponent implements OnInit, OnDestroy {
     manualAccountId = signal('');
     fetching = signal(false);
 
+    // 批量选择
+    selectedOrderIds = signal<Set<string>>(new Set());
+
     // 自定义下拉框状态
     showAccountDropdown = signal(false);
     showStatusDropdown = signal(false);
@@ -80,10 +83,24 @@ export class GoofishOrdersComponent implements OnInit, OnDestroy {
         const status = this.selectedStatus() === '' ? undefined : this.selectedStatus() as number;
 
         this.wsPushService.subscribeOrders(accountId, status);
+        // 取消旧的订阅，避免重复订阅
+        this.wsSubscription?.unsubscribe();
         this.wsSubscription = this.wsPushService.orders$.subscribe((data) => {
-            this.orders.set(data.orders);
-            this.total.set(data.total);
-            this.cdr.detectChanges();
+            // WebSocket 更新时，只在非加载状态下更新数据
+            // 避免在 API 加载时被 WebSocket 数据覆盖
+            if (data && !this.loading()) {
+                // WebSocket 返回的数据可能使用不同的 limit/offset（固定 limit: 50, offset: 0）
+                // 所以只更新总数，订单列表由 API 控制（支持分页）
+                if (data.total !== undefined) {
+                    this.total.set(data.total);
+                }
+                // 如果当前没有订单数据，则使用 WebSocket 数据（可能是初始加载）
+                // 否则不更新订单列表，因为 WebSocket 的 limit/offset 与 API 不一致
+                if (this.orders().length === 0 && data.orders) {
+                    this.orders.set(data.orders);
+                }
+                this.cdr.detectChanges();
+            }
         });
     }
 
@@ -102,16 +119,46 @@ export class GoofishOrdersComponent implements OnInit, OnDestroy {
             const res = await this.orderService.getOrders(
                 this.selectedAccountId() || undefined,
                 this.selectedStatus() === '' ? undefined : this.selectedStatus() as number,
+                undefined, // isRated 参数，暂时不使用
                 this.limit,
                 this.offset()
             );
-            this.orders.set(res.orders);
-            this.total.set(res.total);
-        } catch (e) {
+            console.log('[订单列表] API 响应:', { 
+                ordersCount: res.orders?.length || 0, 
+                total: res.total,
+                limit: res.limit,
+                offset: res.offset,
+                selectedAccountId: this.selectedAccountId(),
+                selectedStatus: this.selectedStatus()
+            });
+            this.orders.set(res.orders || []);
+            this.total.set(res.total || 0);
+            this.cdr.detectChanges();
+        } catch (e: any) {
             console.error('加载订单列表失败', e);
+            // 显示错误信息
+            const errorMsg = e?.error?.error || e?.message || '加载订单列表失败';
+            await this.dialog.alert('错误', `加载订单列表失败: ${errorMsg}`);
+            // 确保即使出错也清空列表，避免显示旧数据
+            this.orders.set([]);
+            this.total.set(0);
         } finally {
             this.loading.set(false);
         }
+    }
+    
+    async refreshOrders() {
+        // 刷新订单列表，并重新订阅 WebSocket
+        this.offset.set(0);
+        // 先取消 WebSocket 订阅，避免在加载时被覆盖
+        this.wsSubscription?.unsubscribe();
+        this.wsPushService.unsubscribeOrders();
+        // 加载订单列表
+        await this.loadOrders();
+        // 重新订阅 WebSocket 以确保实时更新（延迟一点，确保 API 数据先显示）
+        setTimeout(() => {
+            this.subscribeWS();
+        }, 200);
     }
 
     onFilterChange() {
@@ -310,4 +357,45 @@ export class GoofishOrdersComponent implements OnInit, OnDestroy {
         this.manualAccountId.set(accountId);
         this.showManualAccountDropdown.set(false);
     }
+
+    // 批量选择相关方法
+    toggleOrderSelection(orderId: string) {
+        this.selectedOrderIds.update(ids => {
+            const newIds = new Set(ids);
+            if (newIds.has(orderId)) {
+                newIds.delete(orderId);
+            } else {
+                newIds.add(orderId);
+            }
+            return newIds;
+        });
+    }
+
+    isOrderSelected(orderId: string): boolean {
+        return this.selectedOrderIds().has(orderId);
+    }
+
+    toggleSelectAll() {
+        const allSelected = this.orders().every(o => this.isOrderSelected(o.orderId));
+        if (allSelected) {
+            this.selectedOrderIds.set(new Set());
+        } else {
+            this.selectedOrderIds.set(new Set(this.orders().map(o => o.orderId)));
+        }
+    }
+
+    getSelectedCount(): number {
+        return this.selectedOrderIds().size;
+    }
+
+    clearSelection() {
+        this.selectedOrderIds.set(new Set<string>());
+    }
+
+    isAllSelected(): boolean {
+        const orders = this.orders();
+        if (orders.length === 0) return false;
+        return orders.every(o => this.isOrderSelected(o.orderId));
+    }
+
 }

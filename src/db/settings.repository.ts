@@ -50,6 +50,13 @@ export const AI_SETTINGS_KEYS = {
     SYSTEM_PROMPT: 'ai_system_prompt'
 }
 
+// 自动评价设置相关 key
+export const AUTO_RATE_SETTINGS_KEYS = {
+    ENABLED: 'auto_rate_enabled',
+    RATE_CONTENT: 'auto_rate_content',
+    RATE_SCORE: 'auto_rate_score'
+}
+
 // 获取 AI 设置
 export function getAISettings() {
     return {
@@ -78,5 +85,31 @@ export function saveAISettings(settings: {
     }
     if (settings.systemPrompt !== undefined) {
         setSetting(AI_SETTINGS_KEYS.SYSTEM_PROMPT, settings.systemPrompt)
+    }
+}
+
+// 获取自动评价设置
+export function getAutoRateSettings() {
+    return {
+        enabled: getSetting(AUTO_RATE_SETTINGS_KEYS.ENABLED) === 'true',
+        rateContent: getSetting(AUTO_RATE_SETTINGS_KEYS.RATE_CONTENT) || '好评',
+        rateScore: parseInt(getSetting(AUTO_RATE_SETTINGS_KEYS.RATE_SCORE) || '5', 10)
+    }
+}
+
+// 保存自动评价设置
+export function saveAutoRateSettings(settings: {
+    enabled?: boolean
+    rateContent?: string
+    rateScore?: number
+}) {
+    if (settings.enabled !== undefined) {
+        setSetting(AUTO_RATE_SETTINGS_KEYS.ENABLED, settings.enabled ? 'true' : 'false')
+    }
+    if (settings.rateContent !== undefined) {
+        setSetting(AUTO_RATE_SETTINGS_KEYS.RATE_CONTENT, settings.rateContent)
+    }
+    if (settings.rateScore !== undefined) {
+        setSetting(AUTO_RATE_SETTINGS_KEYS.RATE_SCORE, settings.rateScore.toString())
     }
 }

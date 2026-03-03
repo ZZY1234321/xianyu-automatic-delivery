@@ -1,13 +1,12 @@
 import { Component, ChangeDetectionStrategy, signal, input, output, computed } from '@angular/core';
 
 import { SidebarComponent, ViewType } from '../../components/sidebar/sidebar.component';
-import { TopbarComponent } from '../../components/topbar/topbar.component';
 
 export type { ViewType } from '../../components/sidebar/sidebar.component';
 
 @Component({
     selector: 'app-desktop-layout',
-    imports: [SidebarComponent, TopbarComponent],
+    imports: [SidebarComponent],
     templateUrl: './desktop-layout.html',
     styleUrl: './desktop-layout.css',
     changeDetection: ChangeDetectionStrategy.OnPush

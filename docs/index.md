@@ -45,16 +45,3 @@ features:
     title: 移动端支持
     details: 支持 Android APK 打包，可在手机上直接使用
 ---
-
-<style>
-.VPFeatures {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.VPFeatures .VPFeature {
-  width: 100%;
-  max-width: 100%;
-}
-</style>

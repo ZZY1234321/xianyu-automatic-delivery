@@ -82,5 +82,20 @@ export default defineConfig({
       prev: '上一页',
       next: '下一页'
     }
-  }
+  },
+
+  head: [
+    ['style', {}, `
+      .VPFeatures {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+      }
+      .VPFeatures .VPFeature {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 auto !important;
+      }
+    `]
+  ]
 })

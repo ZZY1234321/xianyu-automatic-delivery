@@ -18,30 +18,19 @@ hero:
     - theme: alt
       text: GitHub
       link: https://github.com/ZZY1234321/xianyu-automatic-delivery
-
-features:
-  - icon: 🤖
-    title: AI 智能回复
-    details: 集成 OpenAI 兼容 API（原生支持 OpenClaw），智能理解买家意图并自动回复
-  - icon: 📦
-    title: 自动发货
-    details: 虚拟商品自动发货，支持库存管理、API 取货
-  - icon: 💬
-    title: 会话管理
-    details: 实时同步闲鱼消息，多账号会话管理，消息历史记录
-  - icon: 🛒
-    title: 订单管理
-    details: 订单状态同步，一键发货，免拼发货支持
-  - icon: 👥
-    title: 多账号支持
-    details: 多个闲鱼账号同时在线，独立配置，统一管理
-  - icon: 🔧
-    title: 可视化工作流
-    details: 基于思维导图的发货流程编辑器，灵活配置业务逻辑
-  - icon: 📊
-    title: 系统监控
-    details: 实时日志查看，账号状态监控
-  - icon: 📱
-    title: 移动端支持
-    details: 支持 Android APK 打包，可在手机上直接使用
 ---
+
+## 功能页面
+
+| 页面 | 路由 | 功能 |
+|------|------|------|
+| [仪表盘](/guide/features/dashboard) | `/dashboard` | 系统概览、账号状态监控 |
+| [账号管理](/guide/features/accounts) | `/accounts` | 闲鱼账号增删改查、启停控制 |
+| [商品管理](/guide/features/goods) | `/goods` | 查看账号下的商品列表 |
+| [订单管理](/guide/features/orders) | `/orders` | 订单列表、发货操作 |
+| [会话管理](/guide/features/conversations) | `/conversations` | 实时消息、对话历史 |
+| [自动回复](/guide/features/autoreply) | `/autoreply` | 回复规则配置、AI 设置 |
+| [自动发货](/guide/features/autosell) | `/autosell` | 发货规则、库存管理 |
+| [发货流程](/guide/features/workflow) | `/workflow` | 可视化流程编辑器 |
+| [系统日志](/guide/features/logs) | `/logs` | 实时日志、历史日志查看 |
+| [系统设置](/guide/features/settings) | `/setting` | 主题切换、AI 配置 |
